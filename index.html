@@ -1,0 +1,3303 @@
+<html>
+
+<head>
+    <style>
+        :root {
+            --litepicker-container-months-color-bg: #fff;
+            --litepicker-container-months-box-shadow-color: #ddd;
+            --litepicker-footer-color-bg: #fafafa;
+            --litepicker-footer-box-shadow-color: #ddd;
+            --litepicker-tooltip-color-bg: #fff;
+            --litepicker-month-header-color: #333;
+            --litepicker-button-prev-month-color: #9e9e9e;
+            --litepicker-button-next-month-color: #9e9e9e;
+            --litepicker-button-prev-month-color-hover: #2196f3;
+            --litepicker-button-next-month-color-hover: #2196f3;
+            --litepicker-month-width: calc(var(--litepicker-day-width) * 7);
+            --litepicker-month-weekday-color: #9e9e9e;
+            --litepicker-month-week-number-color: #9e9e9e;
+            --litepicker-day-width: 38px;
+            --litepicker-day-color: #333;
+            --litepicker-day-color-hover: #2196f3;
+            --litepicker-is-today-color: #f44336;
+            --litepicker-is-in-range-color: #bbdefb;
+            --litepicker-is-locked-color: #9e9e9e;
+            --litepicker-is-start-color: #fff;
+            --litepicker-is-start-color-bg: #2196f3;
+            --litepicker-is-end-color: #fff;
+            --litepicker-is-end-color-bg: #2196f3;
+            --litepicker-button-cancel-color: #fff;
+            --litepicker-button-cancel-color-bg: #9e9e9e;
+            --litepicker-button-apply-color: #fff;
+            --litepicker-button-apply-color-bg: #2196f3;
+            --litepicker-button-reset-color: #909090;
+            --litepicker-button-reset-color-hover: #2196f3;
+            --litepicker-highlighted-day-color: #333;
+            --litepicker-highlighted-day-color-bg: #ffeb3b
+        }
+
+        .show-week-numbers {
+            --litepicker-month-width: calc(var(--litepicker-day-width) * 8)
+        }
+
+        .litepicker {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-size: 0.8em;
+            display: none
+        }
+
+        .litepicker button {
+            border: none;
+            background: none
+        }
+
+        .litepicker .container__main {
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex
+        }
+
+        .litepicker .container__months {
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -ms-flex-wrap: wrap;
+            flex-wrap: wrap;
+            background-color: var(--litepicker-container-months-color-bg);
+            border-radius: 5px;
+            -webkit-box-shadow: 0 0 5px var(--litepicker-container-months-box-shadow-color);
+            box-shadow: 0 0 5px var(--litepicker-container-months-box-shadow-color);
+            width: calc(var(--litepicker-month-width) + 10px);
+            -webkit-box-sizing: content-box;
+            box-sizing: content-box
+        }
+
+        .litepicker .container__months.columns-2 {
+            width: calc((var(--litepicker-month-width) * 2) + 20px)
+        }
+
+        .litepicker .container__months.columns-3 {
+            width: calc((var(--litepicker-month-width) * 3) + 30px)
+        }
+
+        .litepicker .container__months.columns-4 {
+            width: calc((var(--litepicker-month-width) * 4) + 40px)
+        }
+
+        .litepicker .container__months.split-view .month-item-header .button-previous-month,
+        .litepicker .container__months.split-view .month-item-header .button-next-month {
+            visibility: visible
+        }
+
+        .litepicker .container__months .month-item {
+            padding: 5px;
+            width: var(--litepicker-month-width);
+            -webkit-box-sizing: content-box;
+            box-sizing: content-box
+        }
+
+        .litepicker .container__months .month-item-header {
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-pack: justify;
+            -ms-flex-pack: justify;
+            justify-content: space-between;
+            font-weight: 500;
+            padding: 10px 5px;
+            text-align: center;
+            -webkit-box-align: center;
+            -ms-flex-align: center;
+            align-items: center;
+            color: var(--litepicker-month-header-color)
+        }
+
+        .litepicker .container__months .month-item-header div {
+            -webkit-box-flex: 1;
+            -ms-flex: 1;
+            flex: 1
+        }
+
+        .litepicker .container__months .month-item-header div>.month-item-name {
+            margin-right: 5px
+        }
+
+        .litepicker .container__months .month-item-header div>.month-item-year {
+            padding: 0
+        }
+
+        .litepicker .container__months .month-item-header .reset-button {
+            color: var(--litepicker-button-reset-color)
+        }
+
+        .litepicker .container__months .month-item-header .reset-button>svg {
+            fill: var(--litepicker-button-reset-color)
+        }
+
+        .litepicker .container__months .month-item-header .reset-button * {
+            pointer-events: none
+        }
+
+        .litepicker .container__months .month-item-header .reset-button:hover {
+            color: var(--litepicker-button-reset-color-hover)
+        }
+
+        .litepicker .container__months .month-item-header .reset-button:hover>svg {
+            fill: var(--litepicker-button-reset-color-hover)
+        }
+
+        .litepicker .container__months .month-item-header .button-previous-month,
+        .litepicker .container__months .month-item-header .button-next-month {
+            visibility: hidden;
+            text-decoration: none;
+            padding: 3px 5px;
+            border-radius: 3px;
+            -webkit-transition: color 0.3s, border 0.3s;
+            transition: color 0.3s, border 0.3s;
+            cursor: default
+        }
+
+        .litepicker .container__months .month-item-header .button-previous-month *,
+        .litepicker .container__months .month-item-header .button-next-month * {
+            pointer-events: none
+        }
+
+        .litepicker .container__months .month-item-header .button-previous-month {
+            color: var(--litepicker-button-prev-month-color)
+        }
+
+        .litepicker .container__months .month-item-header .button-previous-month>svg,
+        .litepicker .container__months .month-item-header .button-previous-month>img {
+            fill: var(--litepicker-button-prev-month-color)
+        }
+
+        .litepicker .container__months .month-item-header .button-previous-month:hover {
+            color: var(--litepicker-button-prev-month-color-hover)
+        }
+
+        .litepicker .container__months .month-item-header .button-previous-month:hover>svg {
+            fill: var(--litepicker-button-prev-month-color-hover)
+        }
+
+        .litepicker .container__months .month-item-header .button-next-month {
+            color: var(--litepicker-button-next-month-color)
+        }
+
+        .litepicker .container__months .month-item-header .button-next-month>svg,
+        .litepicker .container__months .month-item-header .button-next-month>img {
+            fill: var(--litepicker-button-next-month-color)
+        }
+
+        .litepicker .container__months .month-item-header .button-next-month:hover {
+            color: var(--litepicker-button-next-month-color-hover)
+        }
+
+        .litepicker .container__months .month-item-header .button-next-month:hover>svg {
+            fill: var(--litepicker-button-next-month-color-hover)
+        }
+
+        .litepicker .container__months .month-item-weekdays-row {
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            justify-self: center;
+            -webkit-box-pack: start;
+            -ms-flex-pack: start;
+            justify-content: flex-start;
+            color: var(--litepicker-month-weekday-color)
+        }
+
+        .litepicker .container__months .month-item-weekdays-row>div {
+            padding: 5px 0;
+            font-size: 85%;
+            -webkit-box-flex: 1;
+            -ms-flex: 1;
+            flex: 1;
+            width: var(--litepicker-day-width);
+            text-align: center
+        }
+
+        .litepicker .container__months .month-item:first-child .button-previous-month {
+            visibility: visible
+        }
+
+        .litepicker .container__months .month-item:last-child .button-next-month {
+            visibility: visible
+        }
+
+        .litepicker .container__months .month-item.no-previous-month .button-previous-month {
+            visibility: hidden
+        }
+
+        .litepicker .container__months .month-item.no-next-month .button-next-month {
+            visibility: hidden
+        }
+
+        .litepicker .container__days {
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -ms-flex-wrap: wrap;
+            flex-wrap: wrap;
+            justify-self: center;
+            -webkit-box-pack: start;
+            -ms-flex-pack: start;
+            justify-content: flex-start;
+            text-align: center;
+            -webkit-box-sizing: content-box;
+            box-sizing: content-box
+        }
+
+        .litepicker .container__days>div,
+        .litepicker .container__days>a {
+            padding: 5px 0;
+            width: var(--litepicker-day-width)
+        }
+
+        .litepicker .container__days .day-item {
+            color: var(--litepicker-day-color);
+            text-align: center;
+            text-decoration: none;
+            border-radius: 3px;
+            -webkit-transition: color 0.3s, border 0.3s;
+            transition: color 0.3s, border 0.3s;
+            cursor: default
+        }
+
+        .litepicker .container__days .day-item:hover {
+            color: var(--litepicker-day-color-hover);
+            -webkit-box-shadow: inset 0 0 0 1px var(--litepicker-day-color-hover);
+            box-shadow: inset 0 0 0 1px var(--litepicker-day-color-hover)
+        }
+
+        .litepicker .container__days .day-item.is-today {
+            color: var(--litepicker-is-today-color)
+        }
+
+        .litepicker .container__days .day-item.is-locked {
+            color: var(--litepicker-is-locked-color)
+        }
+
+        .litepicker .container__days .day-item.is-locked:hover {
+            color: var(--litepicker-is-locked-color);
+            -webkit-box-shadow: none;
+            box-shadow: none;
+            cursor: default
+        }
+
+        .litepicker .container__days .day-item.is-in-range {
+            background-color: var(--litepicker-is-in-range-color);
+            border-radius: 0
+        }
+
+        .litepicker .container__days .day-item.is-start-date {
+            color: var(--litepicker-is-start-color);
+            background-color: var(--litepicker-is-start-color-bg);
+            border-top-left-radius: 5px;
+            border-bottom-left-radius: 5px;
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0
+        }
+
+        .litepicker .container__days .day-item.is-start-date.is-flipped {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+            border-top-right-radius: 5px;
+            border-bottom-right-radius: 5px
+        }
+
+        .litepicker .container__days .day-item.is-end-date {
+            color: var(--litepicker-is-end-color);
+            background-color: var(--litepicker-is-end-color-bg);
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+            border-top-right-radius: 5px;
+            border-bottom-right-radius: 5px
+        }
+
+        .litepicker .container__days .day-item.is-end-date.is-flipped {
+            border-top-left-radius: 5px;
+            border-bottom-left-radius: 5px;
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0
+        }
+
+        .litepicker .container__days .day-item.is-start-date.is-end-date {
+            border-top-left-radius: 5px;
+            border-bottom-left-radius: 5px;
+            border-top-right-radius: 5px;
+            border-bottom-right-radius: 5px
+        }
+
+        .litepicker .container__days .day-item.is-highlighted {
+            color: var(--litepicker-highlighted-day-color);
+            background-color: var(--litepicker-highlighted-day-color-bg)
+        }
+
+        .litepicker .container__days .week-number {
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-align: center;
+            -ms-flex-align: center;
+            align-items: center;
+            -webkit-box-pack: center;
+            -ms-flex-pack: center;
+            justify-content: center;
+            color: var(--litepicker-month-week-number-color);
+            font-size: 85%
+        }
+
+        .litepicker .container__footer {
+            text-align: right;
+            padding: 10px 5px;
+            margin: 0 5px;
+            background-color: var(--litepicker-footer-color-bg);
+            -webkit-box-shadow: inset 0px 3px 3px 0px var(--litepicker-footer-box-shadow-color);
+            box-shadow: inset 0px 3px 3px 0px var(--litepicker-footer-box-shadow-color);
+            border-bottom-left-radius: 5px;
+            border-bottom-right-radius: 5px
+        }
+
+        .litepicker .container__footer .preview-date-range {
+            margin-right: 10px;
+            font-size: 90%
+        }
+
+        .litepicker .container__footer .button-cancel {
+            background-color: var(--litepicker-button-cancel-color-bg);
+            color: var(--litepicker-button-cancel-color);
+            border: 0;
+            padding: 3px 7px 4px;
+            border-radius: 3px
+        }
+
+        .litepicker .container__footer .button-cancel * {
+            pointer-events: none
+        }
+
+        .litepicker .container__footer .button-apply {
+            background-color: var(--litepicker-button-apply-color-bg);
+            color: var(--litepicker-button-apply-color);
+            border: 0;
+            padding: 3px 7px 4px;
+            border-radius: 3px;
+            margin-left: 10px;
+            margin-right: 10px
+        }
+
+        .litepicker .container__footer .button-apply:disabled {
+            opacity: 0.7
+        }
+
+        .litepicker .container__footer .button-apply * {
+            pointer-events: none
+        }
+
+        .litepicker .container__tooltip {
+            position: absolute;
+            margin-top: -4px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background-color: var(--litepicker-tooltip-color-bg);
+            -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+            white-space: nowrap;
+            font-size: 11px;
+            pointer-events: none;
+            visibility: hidden
+        }
+
+        .litepicker .container__tooltip:before {
+            position: absolute;
+            bottom: -5px;
+            left: calc(50% - 5px);
+            border-top: 5px solid rgba(0, 0, 0, 0.12);
+            border-right: 5px solid transparent;
+            border-left: 5px solid transparent;
+            content: ""
+        }
+
+        .litepicker .container__tooltip:after {
+            position: absolute;
+            bottom: -4px;
+            left: calc(50% - 4px);
+            border-top: 4px solid var(--litepicker-tooltip-color-bg);
+            border-right: 4px solid transparent;
+            border-left: 4px solid transparent;
+            content: ""
+        }
+    </style>
+
+    <meta charset="UTF-8">
+
+    <title>MobileBharat India's Leading Web Developer</title>
+
+    <meta name="description"
+        content="MobileBharat.com is top website developer and designer in Lucknow Uttar Pradesh &amp; Ambedkar Nagar Uttar Pradesh. Mobilebharat.com is a one-stop-solution for Web development, Mobile App Development, and Artificial intelligence Development services. Get in touch to discuss your project!">
+
+    <link rel="canonical" href="index.html">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-site-verification" content="aq1SxsFBXYt-B19u_XM3PMjvuw7LqbkxoiFl3FLvllw">
+
+
+    <meta property="og:url" content="http://www.mobilebharat.com">
+
+    <meta property="og:title" content="MobileBharat: Best Web and Mobile App Development Company in Lucknow">
+
+    <meta property="og:description"
+        content="MobileBharat is a one-stop-solution for Web development, Mobile App Development, and Artificial intelligence Development services. Get in touch to discuss your project!">
+
+    <meta name="”twitter:card”" content="”summary”">
+
+    <meta name="”twitter:title”" content="MobileBharat.com: Web and Mobile App Development Company">
+
+    <meta name="”twitter:description”"
+        content="Mobilebharat is a one-stop-solution for Web development, Mobile App Development, and Artificial intelligence Development services. Get in touch to discuss your project!">
+
+    <meta name="”twitter:url”" content="http://www.mobilebharat.com">
+
+
+
+
+    <meta property="og:image" content="public/img/laptop.png">
+
+    <meta name="twitter:image" content="public/img/laptop.png">
+
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&amp;family=Poppins:wght@400;500;700;800;900&amp;display=swap"
+        rel="stylesheet">
+
+    <link rel="shortcut icon" href="http://mobilebharat.com/public/img/favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css"
+        media="screen">
+
+    <link rel="stylesheet" href="aos.css" media="screen">
+
+    <link rel="stylesheet" href="swiper.min.css" media="screen">
+
+    <link rel="stylesheet" href="grid.css" media="screen">
+
+    <link rel="stylesheet" href="main.css" media="screen">
+
+    <script src="https://embed.tawk.to/_s/v4/app/60e6a1005d8/js/twk-main.js" charset="UTF-8" crossorigin="*"></script>
+    <script src="https://embed.tawk.to/_s/v4/app/60e6a1005d8/js/twk-vendor.js" charset="UTF-8" crossorigin="*"></script>
+    <script src="https://embed.tawk.to/_s/v4/app/60e6a1005d8/js/twk-chunk-vendors.js" charset="UTF-8"
+        crossorigin="*"></script>
+    <script src="https://embed.tawk.to/_s/v4/app/60e6a1005d8/js/twk-chunk-common.js" charset="UTF-8"
+        crossorigin="*"></script>
+    <script src="https://embed.tawk.to/_s/v4/app/60e6a1005d8/js/twk-runtime.js" charset="UTF-8"
+        crossorigin="*"></script>
+    <script src="https://embed.tawk.to/_s/v4/app/60e6a1005d8/js/twk-app.js" charset="UTF-8" crossorigin="*"></script>
+    <script async="" src="https://embed.tawk.to/60d1a2f265b7290ac6373ab9/1f8pe92e1" charset="UTF-8"
+        crossorigin="*"></script>
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "LocalBusiness",
+            "name": "MobileBharat.com",
+            "image": ""https://i.ibb.co/bgR5bJ4/mobilebharat.png" alt="mobilebharat"",
+            "@id": "",
+            "url": "http://www.mobilebharat.com",
+            "Contact Number": "+91 7398935646",
+            "priceRange": "$",
+            "address": {
+                "@type": "PostalAddress",
+                "streetAddress": "106, Village and Post",
+                "addressLocality": "Ahirauli Rani Mau, Ambedkar Nagar, Uttar Pradesh",
+                "postalCode": "224137",
+                "addressCountry": "IN"
+            },
+            "geo": {
+                "@type": "GeoCoordinates",
+                "latitude": 23.051185,
+                "longitude": 72.6438052
+            },
+            "openingHoursSpecification": {
+                "@type": "OpeningHoursSpecification",
+                "dayOfWeek": [
+                    "Monday",
+                    "Tuesday",
+                    "Thursday",
+                    "Wednesday",
+                    "Friday",
+                    "Saturday"
+                ],
+                "opens": "09:00",
+                "closes": "20:00"
+            },
+            "sameAs": [
+                "https://www.facebook.com/mobilebharatservices/",
+                "https://twitter.com/mobilebharat",
+                "https://www.instagram.com/mobilebharat/",
+                "https://www.linkedin.com/company/mobilebharat/",
+                "https://in.pinterest.com/mobilebharat/"
+            ]
+        }
+    </script>
+
+    <script>'undefined' === typeof _trfq || (window._trfq = []); 'undefined' === typeof _trfd && (window._trfd = []), _trfd.push({ 'tccl.baseHost': 'secureserver.net' }), _trfd.push({ 'ap': 'cpsh' }, { 'server': 'a2plcpnl0311' }, { 'id': '6933144' }) // Monitoring performance to make your website faster. If you want to opt-out, please contact web hosting support.</script>
+    <script src="https://img1.wsimg.com/tcc/tcc_l.combined.1.0.6.min.js"></script>
+    <link id="csscr" rel="stylesheet" type="text/css" href="https://www.crowdreviews.com/b.1625919947.css" media="all">
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Montserrat:400">
+    <script type="text/javascript" data-id="138216" src="https://www.crowdreviews.com/b.1625919947.js"
+        id="j-GjPxd4USR"></script>
+    <style type="text/css">
+        .Typewriter__cursor {
+            -webkit-animation: Typewriter-cursor 1s infinite;
+            animation: Typewriter-cursor 1s infinite;
+            margin-left: 1px
+        }
+
+        @-webkit-keyframes Typewriter-cursor {
+            0% {
+                opacity: 0
+            }
+
+            50% {
+                opacity: 1
+            }
+
+            to {
+                opacity: 0
+            }
+        }
+
+        @keyframes Typewriter-cursor {
+            0% {
+                opacity: 0
+            }
+
+            50% {
+                opacity: 1
+            }
+
+            to {
+                opacity: 0
+            }
+        }
+    </style>
+    <script type="text/javascript" src="https://www.crowdreviews.com/api/badge/138216?callback=J50Npi.success"></script>
+    <script charset="utf-8" src="https://embed.tawk.to/_s/v4/app/60e6a1005d8/js/twk-chunk-2d0d2b7c.js"></script>
+    <script charset="utf-8" src="https://embed.tawk.to/_s/v4/app/60e6a1005d8/js/twk-chunk-2d224aff.js"></script>
+    <script charset="utf-8" src="https://embed.tawk.to/_s/v4/app/60e6a1005d8/js/twk-chunk-f1596d96.js"></script>
+    <script charset="utf-8" src="https://embed.tawk.to/_s/v4/app/60e6a1005d8/js/twk-chunk-48f46bef.js"></script>
+    <script charset="utf-8" src="https://embed.tawk.to/_s/v4/app/60e6a1005d8/js/twk-chunk-4fe9d5dd.js"></script>
+    <script charset="utf-8" src="https://embed.tawk.to/_s/v4/app/60e6a1005d8/js/twk-chunk-2d0b9454.js"></script>
+    <script charset="utf-8" src="https://embed.tawk.to/_s/v4/app/60e6a1005d8/js/twk-chunk-f163fcd0.js"></script>
+    <script charset="utf-8" src="https://embed.tawk.to/_s/v4/app/60e6a1005d8/js/twk-chunk-35f53b3a.js"></script>
+    <style type="text/css">
+        #ig65se60ptj1fa86333p {
+            outline: none !important;
+            visibility: visible !important;
+            resize: none !important;
+            box-shadow: none !important;
+            overflow: visible !important;
+            background: none !important;
+            opacity: 1 !important;
+            filter: alpha(opacity=100) !important;
+            -ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity 1
+            }
+
+        ) !important;
+        -mz-opacity:1 !important;
+        -khtml-opacity:1 !important;
+        top:auto !important;
+        right:0px !important;
+        bottom:0px !important;
+        left:auto !important;
+        position:fixed !important;
+        border:0 !important;
+        min-height:0px !important;
+        min-width:0px !important;
+        max-height:none !important;
+        max-width:none !important;
+        padding:0px !important;
+        margin:0px !important;
+        -moz-transition-property:none !important;
+        -webkit-transition-property:none !important;
+        -o-transition-property:none !important;
+        transition-property:none !important;
+        transform:none !important;
+        -webkit-transform:none !important;
+        -ms-transform:none !important;
+        width:auto !important;
+        height:auto !important;
+        display:block !important;
+        z-index:2000000000 !important;
+        background-color:transparent !important;
+        cursor:none !important;
+        float:none !important;
+        border-radius:unset !important;
+        pointer-events:auto !important;
+        clip:auto !important;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/emojione/2.2.7/lib/js/emojione.min.js" type="text/javascript" async=""
+        defer=""></script>
+    <script src="https://cdn.jsdelivr.net/emojione/2.2.7/lib/js/emojione.min.js" type="text/javascript" async=""
+        defer=""></script>
+    <style type="text/css">
+        @keyframes tawkMaxOpen {
+            0% {
+                opacity: 0;
+                transform: translate(0, 30px);
+                ;
+            }
+
+            to {
+                opacity: 1;
+                transform: translate(0, 0px);
+            }
+        }
+
+        @-moz-keyframes tawkMaxOpen {
+            0% {
+                opacity: 0;
+                transform: translate(0, 30px);
+                ;
+            }
+
+            to {
+                opacity: 1;
+                transform: translate(0, 0px);
+            }
+        }
+
+        @-webkit-keyframes tawkMaxOpen {
+            0% {
+                opacity: 0;
+                transform: translate(0, 30px);
+                ;
+            }
+
+            to {
+                opacity: 1;
+                transform: translate(0, 0px);
+            }
+        }
+
+        #y7sj861gkou81fa863352.open {
+            animation: tawkMaxOpen .25s ease !important;
+        }
+
+        @keyframes tawkMaxClose {
+            from {
+                opacity: 1;
+                transform: translate(0, 0px);
+                ;
+            }
+
+            to {
+                opacity: 0;
+                transform: translate(0, 30px);
+                ;
+            }
+        }
+
+        @-moz-keyframes tawkMaxClose {
+            from {
+                opacity: 1;
+                transform: translate(0, 0px);
+                ;
+            }
+
+            to {
+                opacity: 0;
+                transform: translate(0, 30px);
+                ;
+            }
+        }
+
+        @-webkit-keyframes tawkMaxClose {
+            from {
+                opacity: 1;
+                transform: translate(0, 0px);
+                ;
+            }
+
+            to {
+                opacity: 0;
+                transform: translate(0, 30px);
+                ;
+            }
+        }
+
+        #y7sj861gkou81fa863352.closed {
+            animation: tawkMaxClose .25s ease !important
+        }
+    </style>
+</head>
+
+<body data-aos-easing="linear" data-aos-duration="600" data-aos-delay="0" cz-shortcut-listen="true"
+    style="visibility: visible;">
+
+
+
+
+
+    <!--Header-->
+
+    <div id="loader" style="display: none;">
+
+        <span class="loading"></span>
+
+    </div>
+
+
+
+
+
+
+
+
+    <header class="header bg-secondary nav-down">
+
+        <div class="container-fluid d-flex align-items-center">
+
+            <div class="row align-items-center flex-grow-1">
+
+                <div class="col-auto">
+
+                    <a class="logo" href="index.html">
+
+                        <img class="img-fluid logo-dark" style="object-fit: cover;" src="flipo logo.png"
+                            alt="mobilebharat" style="width:100px;height:100px;">
+
+                    </a>
+
+                </div>
+
+                <div class="ml-lg-auto">
+
+                    <div class="rxt-travel-ref-1"></div>
+                    <div class="rxt-travel-container-1" data-ref="1">
+                        <div class="rxt-travel" data-rxt-travel-max="991" data-rxt-travel-appendto="#rxtNavTravel">
+
+                            <div id="rxtNavWrap" class="rxt-navigation-wrap">
+
+                                <span class="mobOnly-menu-close-link">
+
+                                    <i class="mobOnly-menu-close fa fa-times" aria-hidden="true"></i>
+
+                                </span>
+
+                                <div id="listQuickLinks"></div>
+
+                                <div class="d-flex flex-wrap">
+
+                                    <ul class="rxt-navigation px-lg-3">
+
+                                        <li class="">
+
+                                            <a href="about-us.html">About us</a>
+
+                                        </li>
+
+
+
+
+
+
+
+                                        <li class="">
+
+                                            <a href="services.html">Services</a>
+
+                                        </li>
+
+                                        <li class="">
+
+                                            <a href="blog.html">Blog</a>
+
+                                        </li>
+
+                                        <li>
+
+                                            <a class="btn btn-accent" href="https://wa.me/917398935646"><i
+                                                    class="fa fa-phone fa-rotate-90 mr-1"></i>Contact us</a>
+
+                                            <!-- Route::currentRouteNamed('blog') || -->
+
+                                        </li>
+
+                                    </ul>
+
+                                </div>
+
+                            </div>
+
+                            <span class="rxt-nav-overlay"></span>
+
+                        </div>
+                    </div>
+
+                </div>
+
+
+
+                <div class="col-auto align-self-center mobOnly-rxt-nav-trigger-wrap ml-auto">
+
+                    <span class="rxt-nav-trigger">
+
+                        <span></span>
+
+                        <span></span>
+
+                        <span></span>
+
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+
+    <div class="d-block header-spacer" style="height: 120px;">
+
+    </div>
+
+    <div id="rxtNavTravel" class="headerOnTravel"></div>
+
+
+
+
+
+    <!--End Header -->
+
+
+
+    <!--Section-->
+
+
+
+
+
+
+    <main class="pb-lg-5">
+
+        <section class="hero position-relative overflow-hidden">
+
+            <div class="container-fluid">
+
+                <div
+                    class="swiper-container main-slider swiper-container-fade swiper-container-initialized swiper-container-horizontal">
+
+                    <div class="swiper-wrapper" style="transition-duration: 0ms;">
+                        <div class="swiper-slide swiper-slide-duplicate swiper-slide-duplicate-active"
+                            data-swiper-slide-index="3"
+                            style="width: 1233px; transition-duration: 0ms; opacity: 0; transform: translate3d(0px, 0px, 0px);">
+
+                            <div class="row flex-lg-row-reverse align-items-center min-vh-100">
+
+                                <div class="col-xl-7">
+
+                                    <img src="http://mobilebharat.com/public/img/abc1.png"
+                                        alt="Custom Solutions Company" class="img-fluid">
+
+                                </div>
+
+                                <div class="col-xl-5 pl-xl-5">
+
+                                    <!-- <h1 class="typing-string-04 display-3 mb-xl-3 font-weight-bold"></h1> -->
+
+                                    <h2 class="font-weight-bold display-3 mb-xl-3" data-aos-delay="600">INDIA'S LEADING
+                                        WEB DEV</h2>
+
+                                    <p class="h4 col-lg-10 px-0 mb-xl-3 typing-sub-strings aos-init aos-animate"
+                                        data-aos="fade-up" data-aos-delay="1200">Best Quality Web Services</p>
+
+                                    <a href="https://wa.me/917398935646"
+                                        class="btn btn-accent mt-lg-3 btn-lg px-lg-4 aos-init" data-aos="fade-up"
+                                        data-aos-delay="1500">Contact Us <i class="fas fa-arrow-right ml-1"></i></a>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="swiper-slide swiper-slide-duplicate-next" data-swiper-slide-index="0"
+                            style="width: 1233px; transition-duration: 0ms; opacity: 0; transform: translate3d(-1233px, 0px, 0px);">
+
+                            <div class="row flex-lg-row-reverse align-items-center min-vh-100">
+
+                                <div class="col-xl-7">
+
+                                    <!-- <img src="img/laptop.png" alt="Web Development Company" class="img-fluid" data-aos="fade-up" data-aos-delay="800" > -->
+
+                                    <img src="http://mobilebharat.com/public/img/la1.png" alt="Web Development Company"
+                                        class="img-fluid">
+
+                                </div>
+
+                                <div class="col-xl-5 pl-xl-5">
+
+                                    <h4 class="h5 mb-xl-3 aos-init aos-animate" data-aos="fade-up">
+                                        SCHOOL/COLLEGES/INSTITUTIONS/PERSONAL</h4>
+
+                                    <!-- <h1 class="typing-string-01 display-3 mb-xl-3 font-weight-bold"></h1> -->
+
+                                    <h1 class="font-weight-bold display-3 mb-xl-3" data-aos-delay="600">MONSOON SALE
+                                    </h1>
+
+                                    <p class="h4 col-lg-10 px-0 mb-xl-3 typing-sub-strings aos-init aos-animate"
+                                        data-aos="fade-up" data-aos-delay="1200">CALL +91 7398935646 </p>
+
+                                    <a href="https://wa.me/917398935646"
+                                        class="btn btn-accent mt-lg-3 btn-lg px-lg-4 aos-init aos-animate"
+                                        data-aos="fade-up" data-aos-delay="1500">Contact Us <i
+                                            class="fas fa-arrow-right ml-1"></i></a>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="swiper-slide" data-swiper-slide-index="1"
+                            style="width: 1233px; transition-duration: 0ms; opacity: 0; transform: translate3d(-2466px, 0px, 0px);">
+
+                            <div class="row flex-lg-row-reverse align-items-center min-vh-100">
+
+                                <div class="col-xl-7">
+
+                                    <img src="http://mobilebharat.com/public/img/ba2.png" alt="Mobile App Development"
+                                        class="img-fluid">
+
+                                </div>
+
+                                <div class="col-xl-5 pl-xl-5">
+
+                                    <!-- <h1 class="typing-string-02 display-3 mb-xl-3 font-weight-bold"></h1> -->
+
+                                    <h2 class="font-weight-bold display-3 mb-xl-3" data-aos-delay="600">FREE WEBSITE
+                                    </h2>
+
+                                    <p class="h4 col-lg-10 px-0 mb-xl-3 typing-sub-strings aos-init aos-animate"
+                                        data-aos="fade-up" data-aos-delay="1200">FOR NON-PROFIT ORGANISATIONS</p>
+
+                                    <a href="https://wa.me/917398935646"
+                                        class="btn btn-accent mt-lg-3 btn-lg px-lg-4 aos-init aos-animate"
+                                        data-aos="fade-up" data-aos-delay="1500">Contact Us <i
+                                            class="fas fa-arrow-right ml-1"></i></a>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="swiper-slide swiper-slide-prev" data-swiper-slide-index="2"
+                            style="width: 1233px; transition-duration: 0ms; opacity: 0; transform: translate3d(-3699px, 0px, 0px);">
+
+                            <div class="row flex-lg-row-reverse align-items-center min-vh-100">
+
+                                <div class="col-xl-7">
+
+                                    <img src="http://mobilebharat.com/public/img/ba1.png"
+                                        alt="Artificial Intelligence Development Company" class="img-fluid">
+
+                                </div>
+
+                                <div class="col-xl-5 pl-xl-5">
+
+                                    <!-- <h1 class="typing-string-03 display-3 mb-xl-3 font-weight-bold"></h1> -->
+
+                                    <h2 class="font-weight-bold display-3 mb-xl-3" data-aos-delay="600">FLAT 25% OFF ON
+                                    </h2>
+
+                                    <p class="h4 col-lg-10 px-0 mb-xl-3 typing-sub-strings aos-init aos-animate"
+                                        data-aos="fade-up" data-aos-delay="1200">SMARTPHONE APPS</p>
+
+                                    <a href="https://wa.me/917398935646"
+                                        class="btn btn-accent mt-lg-3 btn-lg px-lg-4 aos-init aos-animate"
+                                        data-aos="fade-up" data-aos-delay="1500">Contact Us <i
+                                            class="fas fa-arrow-right ml-1"></i></a>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="swiper-slide swiper-slide-active" data-swiper-slide-index="3"
+                            style="width: 1233px; transition-duration: 0ms; opacity: 1; transform: translate3d(-4932px, 0px, 0px);">
+
+                            <div class="row flex-lg-row-reverse align-items-center min-vh-100">
+
+                                <div class="col-xl-7">
+
+                                    <img src="http://mobilebharat.com/public/img/abc1.png"
+                                        alt="Custom Solutions Company" class="img-fluid">
+
+                                </div>
+
+                                <div class="col-xl-5 pl-xl-5">
+
+                                    <!-- <h1 class="typing-string-04 display-3 mb-xl-3 font-weight-bold"></h1> -->
+
+                                    <h2 class="font-weight-bold display-3 mb-xl-3" data-aos-delay="600">INDIA'S LEADING
+                                        WEB DEV</h2>
+
+                                    <p class="h4 col-lg-10 px-0 mb-xl-3 typing-sub-strings aos-init aos-animate"
+                                        data-aos="fade-up" data-aos-delay="1200">Best Quality Web Services</p>
+
+                                    <a href="https://wa.me/917398935646"
+                                        class="btn btn-accent mt-lg-3 btn-lg px-lg-4 aos-init" data-aos="fade-up"
+                                        data-aos-delay="1500">Contact Us <i class="fas fa-arrow-right ml-1"></i></a>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="swiper-slide swiper-slide-duplicate swiper-slide-next" data-swiper-slide-index="0"
+                            style="width: 1233px; transition-duration: 0ms; opacity: 0; transform: translate3d(-6165px, 0px, 0px);">
+
+                            <div class="row flex-lg-row-reverse align-items-center min-vh-100">
+
+                                <div class="col-xl-7">
+
+                                    <!-- <img src="img/laptop.png" alt="Web Development Company" class="img-fluid" data-aos="fade-up" data-aos-delay="800" > -->
+
+                                    <img src="http://mobilebharat.com/public/img/la1.png" alt="Web Development Company"
+                                        class="img-fluid">
+
+                                </div>
+
+                                <div class="col-xl-5 pl-xl-5">
+
+                                    <h4 class="h5 mb-xl-3 aos-init aos-animate" data-aos="fade-up">
+                                        SCHOOL/COLLEGES/INSTITUTIONS/PERSONAL</h4>
+
+                                    <!-- <h1 class="typing-string-01 display-3 mb-xl-3 font-weight-bold"></h1> -->
+
+                                    <h1 class="font-weight-bold display-3 mb-xl-3" data-aos-delay="600">MONSOON SALE
+                                    </h1>
+
+                                    <p class="h4 col-lg-10 px-0 mb-xl-3 typing-sub-strings aos-init aos-animate"
+                                        data-aos="fade-up" data-aos-delay="1200">CALL +91 7398935646 </p>
+
+                                    <a href="https://wa.me/917398935646"
+                                        class="btn btn-accent mt-lg-3 btn-lg px-lg-4 aos-init aos-animate"
+                                        data-aos="fade-up" data-aos-delay="1500">Contact Us <i
+                                            class="fas fa-arrow-right ml-1"></i></a>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <span class="swiper-notification" aria-live="assertive" aria-atomic="true"></span>
+                </div>
+
+            </div>
+
+            <img src="http://mobilebharat.com/public/img/bg-element-03.png" alt=""
+                class="d-none d-lg-block img-fluid banner-ele-3 animate-rotate slow aos-init aos-animate"
+                data-aos="fade" data-aos-delay="1000" data-aos-offset="-100">
+
+            <a href="index.html#" class="d-none d-xl-block scroll-down text-center aos-init aos-animate" data-aos="fade"
+                data-aos-delay="1500" data-aos-offset="0">
+
+                <i class="fas fa-circle font-size-10 animate-btn"></i>
+
+            </a>
+
+        </section>
+
+
+
+
+
+        <section class="py-3 py-lg-5">
+
+            <div class="container-fluid py-xl-5">
+
+                <div class="row">
+
+                    <div class="col-lg-6 col-xl-3 d-lg-flex aos-init" data-aos="fade-up" data-aos-delay="150"
+                        data-aos-offset="0">
+
+                        <a href="web-development.html">
+
+                        </a>
+                        <div class="media shadow p-3 card-style-1 mb-3 align-items-stretch d-lg-flex"><a
+                                href="web-development.html">
+
+                                <div class="avatar-md mr-3 p-3 rounded-circle">
+
+                                    <svg class="icon" viewBox="0 0 512 512">
+
+                                        <use xlink:href="#webDevelopment"></use>
+
+                                    </svg>
+
+                                </div>
+
+                            </a>
+                            <div class="media-body d-lg-flex flex-column"><a href="web-development.html">
+
+                                    <div>
+
+                                        <h3 class="h4 font-weight-bold">Web Development</h3>
+
+                                        <p>Tap the power of the digital-enabled age with our impactful web solutions to
+                                            elevate your real business potential.</p>
+
+                                    </div>
+
+                                </a>
+                                <div class="text-right mt-auto"><a href="web-development.html">
+
+                                    </a><a href="web-development.html" class="btn btn-link">Read more <i
+                                            class="fas fa-arrow-right ml-1"></i></a>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+
+                    </div>
+
+                    <div class="col-lg-6 col-xl-3 d-lg-flex aos-init" data-aos="fade-up" data-aos-delay="300">
+
+                        <a href="mobile-app-development.html">
+
+                        </a>
+                        <div class="media shadow p-3 card-style-1 mb-3 align-items-stretch d-lg-flex"><a
+                                href="mobile-app-development.html">
+
+                                <div class="avatar-md mr-3 p-3 rounded-circle">
+
+                                    <svg class="icon" viewBox="0 0 64 64">
+
+                                        <use xlink:href="#applicationDevelopment"></use>
+
+                                    </svg>
+
+                                </div>
+
+                            </a>
+                            <div class="media-body d-lg-flex flex-column"><a href="mobile-app-development.html">
+
+                                    <div>
+
+                                        <h3 class="h4 font-weight-bold">Mobile App Development</h3>
+
+                                        <p>Our young and energetic, mobile app development team understands the
+                                            importance of powerful apps for greater benefits of the business. </p>
+
+                                    </div>
+
+                                </a>
+                                <div class="text-right mt-auto"><a href="mobile-app-development.html">
+
+                                    </a><a href="mobile-app-development.html" class="btn btn-link">Read more <i
+                                            class="fas fa-arrow-right ml-1"></i></a>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+
+                    </div>
+
+
+
+                    <div class="col-lg-6 col-xl-3 d-lg-flex aos-init" data-aos="fade-up" data-aos-delay="450">
+
+                        <a href="artificial-intelligence-development.html">
+
+                        </a>
+                        <div class="media shadow p-3 card-style-1 mb-3 align-items-stretch d-lg-flex"><a
+                                href="artificial-intelligence-development.html">
+
+                                <div class="avatar-md mr-3 p-3 rounded-circle">
+
+                                    <svg class="icon" viewBox="-16 0 512 512.00104">
+
+                                        <use xlink:href="#realityDevelopment"></use>
+
+                                    </svg>
+
+                                </div>
+
+                            </a>
+                            <div class="media-body d-lg-flex flex-column"><a
+                                    href="artificial-intelligence-development.html">
+
+                                    <div>
+
+                                        <h3 class="h4 font-weight-bold">Artificial Intelligence </h3>
+
+                                        <p>Build a smarter world with artificial intelligence. Robust your business
+                                            performance with our machine learning, chatbot development, speech
+                                            recognition, deep learning, natural language processing, and data analysis
+                                            services.</p>
+
+                                    </div>
+
+                                </a>
+                                <div class="text-right mt-auto"><a href="artificial-intelligence-development.html">
+
+                                    </a><a href="artificial-intelligence-development.html" class="btn btn-link">Read
+                                        more <i class="fas fa-arrow-right ml-1"></i></a>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+
+                    </div>
+
+
+
+
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+
+
+
+
+
+
+        <section class="py-3 py-lg-5 position-relative overflow-hidden">
+
+            <div class="container py-xl-5">
+
+                <h6 class="display-3 text-center text-uppercase font-weight-bold aos-init" style="opacity: 0.1;"
+                    data-aos="fade-up" data-aos-delay="300">no</h6>
+
+                <h3 class="h1 text-center font-weight-bold mt-n5 aos-init" data-aos="fade-up" data-aos-delay="100">Tools
+                    and Tech Stack</h3>
+
+                <div class="row mt-3 mt-xl-5">
+
+                    <div class="col-12">
+
+                        <div class="category-filter mb-3 mb-lg-5 text-center">
+
+                            <button class="btn btn-light btn-lg active mr-1 mr-lg-3 mb-2"
+                                data-tag="designing">Designing</button>
+
+                            <button class="btn btn-light btn-lg mr-1 mr-lg-3 mb-2" data-tag="frontend">Frontend</button>
+
+                            <button class="btn btn-light btn-lg mr-1 mr-lg-3 mb-2" data-tag="backend">Backend</button>
+
+                            <button class="btn btn-light btn-lg mr-1 mr-lg-3 mb-2" data-tag="database">Database</button>
+
+                            <button class="btn btn-light btn-lg mr-1 mr-lg-3 mb-2" data-tag="mobile">Mobile</button>
+
+                            <button class="btn btn-light btn-lg mb-2" data-tag="ai">AI</button>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-12">
+
+                        <div class="row justify-content-center" id="category-list">
+
+                            <div class="col-4 col-sm-3 col-lg-2 text-center mb-2 mb-lg-5" data-category="designing"
+                                style="">
+
+                                <div class="bg-XD mb-2 tool-tilt mx-auto"></div>
+
+                                <p>Adobe XD</p>
+
+                            </div>
+
+                            <div class="col-4 col-sm-3 col-lg-2 text-center mb-2 mb-lg-5" data-category="designing"
+                                style="">
+
+                                <div class="bg-PS mb-2 tool-tilt mx-auto"></div>
+
+                                <p>Photoshop</p>
+
+                            </div>
+
+                            <div class="col-4 col-sm-3 col-lg-2 text-center mb-2 mb-lg-5" data-category="designing"
+                                style="">
+
+                                <div class="bg-AI mb-2 tool-tilt mx-auto"></div>
+
+                                <p>Illustrator</p>
+
+                            </div>
+
+                            <div class="col-4 col-sm-3 col-lg-2 text-center mb-2 mb-lg-5" data-category="designing"
+                                style="">
+
+                                <div class="bg-ID mb-2 tool-tilt mx-auto"></div>
+
+                                <p>InDesign</p>
+
+                            </div>
+
+                            <div class="col-4 col-sm-3 col-lg-2 text-center mb-2 mb-lg-5" data-category="designing"
+                                style="">
+
+                                <div class="bg-AE mb-2 tool-tilt mx-auto"></div>
+
+                                <p>After Effects</p>
+
+                            </div>
+
+                            <div class="col-4 col-sm-3 col-lg-2 text-center mb-2 mb-lg-5" data-category="designing"
+                                style="">
+
+                                <div class="bg-flashbuilder mb-2 tool-tilt mx-auto"></div>
+
+                                <p>Adobe Flash</p>
+
+                            </div>
+
+                            <div class="col-4 col-sm-3 col-lg-2 text-center mb-2 mb-lg-5" data-category="designing"
+                                style="">
+
+                                <div class="bg-BR mb-2 tool-tilt mx-auto"></div>
+
+                                <p>Adobe Bridge</p>
+
+                            </div>
+
+                            <div class="col-4 col-sm-3 col-lg-2 text-center mb-2 mb-lg-5" data-category="designing"
+                                style="">
+
+                                <div class="bg-acrobat mb-2 tool-tilt mx-auto"></div>
+
+                                <p>Adobe Acrobat</p>
+
+                            </div>
+
+                            <div class="col-4 col-sm-3 col-lg-2 text-center mb-2 mb-lg-5 " data-category="frontend"
+                                style="display: none;">
+
+                                <div class="bg-Html mb-2 tool-tilt mx-auto"></div>
+
+                                <p>HTML</p>
+
+                            </div>
+
+                            <div class="col-4 col-sm-3 col-lg-2 text-center mb-2 mb-lg-5 " data-category="frontend"
+                                style="display: none;">
+
+                                <div class="bg-CSS mb-2 tool-tilt mx-auto"></div>
+
+                                <p>CSS</p>
+
+                            </div>
+
+                            <div class="col-4 col-sm-3 col-lg-2 text-center mb-2 mb-lg-5 " data-category="frontend"
+                                style="display: none;">
+
+                                <div class="bg-js mb-2 tool-tilt mx-auto"></div>
+
+                                <p>JavaScript</p>
+
+                            </div>
+
+                            <div class="col-4 col-sm-3 col-lg-2 text-center mb-2 mb-lg-5 " data-category="backend"
+                                style="display: none;">
+
+                                <div class="bg-php mb-2 tool-tilt mx-auto"></div>
+
+                                <p>PHP</p>
+
+                            </div>
+
+                            <div class="col-4 col-sm-3 col-lg-2 text-center mb-2 mb-lg-5 " data-category="backend"
+                                style="display: none;">
+
+                                <div class="bg-Yii mb-2 tool-tilt mx-auto"></div>
+
+                                <p>Yii</p>
+
+                            </div>
+
+                            <div class="col-4 col-sm-3 col-lg-2 text-center mb-2 mb-lg-5 " data-category="backend"
+                                style="display: none;">
+
+                                <div class="bg-Codeignitor mb-2 tool-tilt mx-auto"></div>
+
+                                <p>Codeignitor</p>
+
+                            </div>
+
+                            <div class="col-4 col-sm-3 col-lg-2 text-center mb-2 mb-lg-5 " data-category="backend"
+                                style="display: none;">
+
+                                <div class="bg-Laravel mb-2 tool-tilt mx-auto"></div>
+
+                                <p>Laravel</p>
+
+                            </div>
+
+                            <div class="col-6 col-sm-4 col-lg-2 text-center mb-2 mb-lg-5 " data-category="database"
+                                style="display: none;">
+
+                                <div class="bg-mysql mb-2 tool-tilt mx-auto"></div>
+
+                                <p>MySql</p>
+
+                            </div>
+
+                            <div class="col-6 col-sm-4 col-lg-2 text-center mb-2 mb-lg-5 " data-category="database"
+                                style="display: none;">
+
+                                <div class="bg-postgreesql mb-2 tool-tilt mx-auto"></div>
+
+                                <p>PostgreSQL</p>
+
+                            </div>
+
+                            <div class="col-6 col-sm-4 col-lg-2 text-center mb-2 mb-lg-5 " data-category="database"
+                                style="display: none;">
+
+                                <div class="bg-mongodb mb-2 tool-tilt mx-auto"></div>
+
+                                <p>MongoDB</p>
+
+                            </div>
+
+                            <div class="col-6 col-sm-4 col-lg-2 text-center mb-2 mb-lg-5 " data-category="database"
+                                style="display: none;">
+
+                                <div class="bg-Firebase mb-2 tool-tilt mx-auto"></div>
+
+                                <p>Firebase</p>
+
+                            </div>
+
+                            <div class="col-4 col-sm-3 col-lg-2 text-center mb-2 mb-lg-5 " data-category="mobile"
+                                style="display: none;">
+
+                                <div class="bg-apple mb-2 tool-tilt mx-auto"></div>
+
+                                <p>Apple</p>
+
+                            </div>
+
+                            <div class="col-4 col-sm-3 col-lg-2 text-center mb-2 mb-lg-5 " data-category="mobile"
+                                style="display: none;">
+
+                                <div class="bg-Android mb-2 tool-tilt mx-auto"></div>
+
+                                <p>Android</p>
+
+                            </div>
+
+                            <div class="col-6 col-sm-3 col-lg-2 text-center mb-2 mb-lg-5 " data-category="mobile"
+                                style="display: none;">
+
+                                <div class="bg-Ionic mb-2 tool-tilt mx-auto"></div>
+
+                                <p>Ionic</p>
+
+                            </div>
+
+                            <div class="col-6 col-sm-3 col-lg-2 text-center mb-2 mb-lg-5 " data-category="mobile"
+                                style="display: none;">
+
+                                <div class="bg-flutter mb-2 tool-tilt mx-auto"></div>
+
+                                <p>Flutter</p>
+
+                            </div>
+
+                            <div class="col-6 col-sm-3 col-lg-2 text-center mb-2 mb-lg-5 " data-category="mobile"
+                                style="display: none;">
+
+                                <div class="bg-React mb-2 tool-tilt mx-auto"></div>
+
+                                <p>React Native</p>
+
+                            </div>
+
+                            <div class="col-4 col-sm-3 col-lg-2 text-center mb-2 mb-lg-5 " data-category="ai"
+                                style="display: none;">
+
+                                <div class="bg-python mb-2 tool-tilt mx-auto"></div>
+
+                                <p>Python</p>
+
+                            </div>
+
+                            <div class="col-4 col-sm-3 col-lg-2 text-center mb-2 mb-lg-5" data-category="ai"
+                                style="display: none;">
+
+                                <div class="bg-Django mb-2 tool-tilt mx-auto"></div>
+
+                                <p>DJango</p>
+
+                            </div>
+
+                            <div class="col-4 col-sm-3 col-lg-2 text-center mb-2 mb-lg-5" data-category="ai"
+                                style="display: none;">
+
+                                <div class="bg-Flask mb-2 tool-tilt mx-auto"></div>
+
+                                <p>Flask</p>
+
+                            </div>
+
+                            <div class="col-4 col-sm-3 col-lg-2 text-center mb-2 mb-lg-5" data-category="ai"
+                                style="display: none;">
+
+                                <div class="bg-Zope mb-2 tool-tilt mx-auto"></div>
+
+                                <p>Zope</p>
+
+                            </div>
+
+                            <div class="col-4 col-sm-3 col-lg-2 text-center mb-2 mb-lg-5" data-category="ai"
+                                style="display: none;">
+
+                                <div class="bg-Pyramid mb-2 tool-tilt mx-auto"></div>
+
+                                <p>Pyramid</p>
+
+                            </div>
+
+                            <div class="col-4 col-sm-3 col-lg-2 text-center mb-2 mb-lg-5 " data-category="ai"
+                                style="display: none;">
+
+                                <div class="bg-Web2py mb-2 tool-tilt mx-auto"></div>
+
+                                <p>Web2py</p>
+
+                            </div>
+
+                            <div class="col-4 col-sm-3 col-lg-2 text-center mb-2 mb-lg-5 " data-category="ai"
+                                style="display: none;">
+
+                                <div class="bg-Tornado mb-2 tool-tilt mx-auto"></div>
+
+                                <p>Tornado</p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <img src="http://mobilebharat.com/public/img/dots-circle.png" alt=""
+                class="d-none d-xl-block img-fluid animate-rotate slow"
+                style="position: absolute;top: 28%;right: -270px;user-select: none;pointer-events: none;">
+
+            <div class="py-3 py-lg-5 position-relative">
+
+                <img src="http://mobilebharat.com/public/img/svg/welcome.svg" alt="welcome to Mobilebharat"
+                    class="img-absolute-50 pl-lg-5 left mb-3 mb-lg-0" loading="eager">
+
+                <div class="container py-xl-5">
+
+                    <div class="row">
+
+                        <div class="col-lg-6 offset-lg-6">
+
+                            <h6 class="display-3 text-uppercase font-weight-bold" style="opacity: 0.1;">welcome to</h6>
+
+                            <h3 class="h1 font-weight-bold mt-n5 mb-4">FLIPO</h3>
+
+                            <p class="mb-3">Ofcourse we have started from very small but always see a hope to rise to
+                                the next level, flipo is moving rapidly towards the first choice for web and IT
+                                Solutions in Uttar Pradesh Region. We are in the business to provide World class web and
+                                IT Solutions. Our Establishment is totally based on innovation, efficiency and quality.
+                                We are continiously developing ourselves to deliver latest quality services each year.
+                            </p>
+
+
+
+                            <ul class="nav nav-pills mt-5 mb-3" id="pills-tab" role="tablist">
+
+                                <li class="nav-item" role="Pricingstion">
+
+                                    <a class="nav-link active" id="pills-home-tab" data-toggle="pill"
+                                        href="index.html#pills-home" role="tab" aria-controls="pills-home"
+                                        aria-selected="true">Our Mission</a>
+
+                                </li>
+
+                                <li class="nav-item ml-3" role="Pricingstion">
+
+                                    <a class="nav-link" id="pills-profile-tab" data-toggle="pill"
+                                        href="index.html#pills-profile" role="tab" aria-controls="pills-profile"
+                                        aria-selected="false">Our Vision</a>
+
+                                </li>
+
+                            </ul>
+
+                            <div class="tab-content" id="pills-tabContent">
+
+                                <div class="tab-pane fade show active" id="pills-home" role="tabpanel"
+                                    aria-labelledby="pills-home-tab">
+
+                                    <p>Flipo is always bound to provide top notch web and IT Services to our Customers.
+                                        Our mission is to connect all small interprises to internet through “Website for
+                                        all” Program within a small spendings without any serious burden on customer.
+                                        Our Director has a dream to connect all small venders and businesses to
+                                        internet. </p>
+
+                                </div>
+
+                                <div class="tab-pane fade" id="pills-profile" role="tabpanel"
+                                    aria-labelledby="pills-profile-tab">
+
+                                    <p>Our philosophy of Less-Ordinary ensures the pursuit of the client’s best
+                                        interest. Aimed at offering holistic services to our clients to meet present and
+                                        make them future-ready.</p>
+
+                                </div>
+
+                            </div>
+
+
+
+                            <a href="about-us.html" class="btn btn-accent mt-lg-3 btn-lg px-lg-4">Discover <i
+                                    class="fas fa-arrow-right ml-1"></i></a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <section class="py-3 py-lg-5 position-relative overflow-hidden">
+
+            <div class="container py-xl-5 position-relative">
+
+                <h6 class="display-3 text-center text-uppercase font-weight-bold aos-init" style="opacity: 0.1;"
+                    data-aos="fade-up" data-aos-delay="300">process</h6>
+
+                <h4 class="h1 text-center font-weight-bold mt-n5 aos-init" data-aos="fade-up" data-aos-delay="100">How
+                    our projects come ALIVE!</h4>
+
+                <p class="text-center mt-3 aos-init" data-aos="fade-up" data-aos-delay="150">Our projects grow from
+                    initial to final stage with the following process.</p>
+
+                <img src="http://mobilebharat.com/public/img/svg/tir-arrow.svg" alt="arrow" data-aos="fade-up"
+                    class="img-fluid d-none d-lg-block aos-init"
+                    style="position: absolute;left:50%;height: 140px;transform: translateX(-50%);">
+
+                <div class="row justify-content-xl-center mb-5">
+
+                    <div class="col-12 col-xl-10 pt-4">
+
+                        <div class="project-process-wrap mt-3 mt-xl-5 pt-5">
+
+                            <div class="row no-gutters">
+
+                                <div class="col-md-6 offset-md-6">
+
+                                    <div class="pp-item aos-init" data-aos="fade-up">
+
+                                        <h3 class="h3 mb-2">Brainstorming</h3>
+
+                                        <p class="mb-0">This is the first step for every project that we undertake. Our
+                                            expert team sits down with our clients for a thorough discussion to
+                                            understand the exact needs of the clients.</p>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <div class="row no-gutters">
+
+                                <div class="col-md-6">
+
+                                    <div class="pp-item text-lg-right aos-init" data-aos="fade-up">
+
+                                        <h3 class="h3 mb-2">Project Sketching</h3>
+
+                                        <p class="mb-0">Client requirements are thereafter analyzed. Based on the
+                                            analysis, project timeline and milestones are setup and finalized after
+                                            approval from the clients.</p>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <div class="row no-gutters">
+
+                                <div class="col-md-6 offset-md-6">
+
+                                    <div class="pp-item aos-init" data-aos="fade-up">
+
+                                        <h3 class="h3 mb-2">Design &amp; Development</h3>
+
+                                        <p class="mb-0">The designing team takes over from here and creates an elegant
+                                            and user friendly UI design. Once the design is approved, the developing
+                                            team steps in implementing the functionalities and processess.</p>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <div class="row no-gutters">
+
+                                <div class="col-md-6">
+
+                                    <div class="pp-item text-lg-right aos-init" data-aos="fade-up">
+
+                                        <h3 class="h3 mb-2">Testing</h3>
+
+                                        <p class="mb-0">Once the application is developed, it goes through multiple
+                                            rigorous testing scenarios. This makes sure that the application is entirely
+                                            bug free with a smooth working flow.</p>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <div class="row no-gutters">
+
+                                <div class="col-md-6 offset-md-6">
+
+                                    <div class="pp-item aos-init" data-aos="fade-up">
+
+                                        <h3 class="h3 mb-2">Project Submission</h3>
+
+                                        <p class="mb-0">After getting a green signal from our testing team, the
+                                            application is then submitted to the clients.</p>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div style="height: 57px;" class="d-none d-lg-block"></div>
+
+                <img src="http://mobilebharat.com/public/img/svg/tir-under.svg" data-aos="fade-up" alt="arrow"
+                    class="img-fluid d-none d-lg-block aos-init"
+                    style="position: absolute; left: 50%; height: 153px; transform: translateX(-50%); bottom: 0px;user-select: none;pointer-events: none;">
+
+            </div>
+
+
+
+            <div class="bg-primary text-white py-3 py-lg-5 mt-5">
+
+                <div class="container text-center">
+
+                    <div class="h1">Give wings to your <b class="text-accent">IDEAS</b>.<br> We love to discuss real
+                        business</div>
+
+                    <a href="brochure/mobilebharat%20Brochure%20(1).pdf" download=""
+                        class="btn btn-accent btn-lg px-lg-5 mt-lg-3 py-2 py-lg-3 font-weight-bold font-size-20">DOWNLOAD
+                        BROCHURE</a>
+
+                </div>
+
+            </div>
+
+            <div class="py-3 py-lg-5">
+
+                <div class="container py-xl-5">
+
+                    <div class="row align-items-lg-center">
+
+                        <div class="col-lg-7">
+
+                            <h6 class="display-3 text-uppercase font-weight-bold aos-init" style="opacity: 0.1;"
+                                data-aos="fade-up" data-aos-delay="300">testimonials</h6>
+
+                            <h4 class="h1 font-weight-bold mt-n5 aos-init" data-aos="fade-up" data-aos-delay="100">
+                                Customer Reviews</h4>
+
+                        </div>
+
+                        <!-- <div class="col-lg-5" data-aos="fade-up" data-aos-delay="300">
+
+                            <p>Give wings to your IDEAS. We love to discuss real business.</p>
+
+                        </div> -->
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="container">
+
+                <div class="swiper-container testimonial-slider py-lg-5 swiper-container-initialized swiper-container-horizontal"
+                    style="background-image: url('public/img/bgblack.png');">
+
+                    <div class="swiper-wrapper pb-lg-5"
+                        style="transition-duration: 0ms; transform: translate3d(-5600px, 0px, 0px);">
+                        <div class="swiper-slide p-2 swiper-slide-duplicate" data-swiper-slide-index="9"
+                            style="width: 1110px; margin-right: 10px;">
+
+                            <div class="row">
+
+                                <div class="col-4 col-md-4 offset-md-1">
+
+                                    <div class="avatar-testimonial">
+
+                                        <img src="http://mobilebharat.com/public/img/avatar-03.jpg" alt=""
+                                            class="img-fluid mb-3 mb-md-0 shadow-lg" loading="lazy">
+
+                                    </div>
+
+                                </div>
+
+                                <div class="col-md-7 col-lg-6 text-white">
+
+                                    <h4 class="h3 font-weight-bold"> Ankit Singh , Patna , India</h4>
+
+                                    <p class="text-white">Commandable work done by Mobilebharat, </p>
+
+                                    <p class="text-white">Satyam has incredible programming abilities and great bunch of
+                                        developers. He has additionally given numerous suggestions about what is right
+                                        now going in the market and has helped me improve my application. On the off
+                                        chance that you are searching for individual who can convey the quality item
+                                        with less measure of time then Hitesh is the one. He conveys finish attractive
+                                        application.</p>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="swiper-slide p-2" data-swiper-slide-index="0"
+                            style="width: 1110px; margin-right: 10px;">
+
+                            <div class="row">
+
+                                <div class="col-4 col-md-4 offset-md-1">
+
+                                    <div class="avatar-testimonial">
+
+                                        <img src="http://mobilebharat.com/public/img/avatar-01.jpg" alt=""
+                                            class="img-fluid mb-3 mb-lg-0 shadow-lg" loading="lazy">
+
+                                    </div>
+
+                                </div>
+
+                                <div class="col-md-7 col-lg-6 text-white">
+
+                                    <h4 class="h3 font-weight-bold">Vikas Tiwari , India</h4>
+
+                                    <p class="text-white"> Great job done by MobileBharat team. They have built
+                                        customised software for our business and we are completely driven by the
+                                        Software.</p>
+
+                                    <p class="text-white">They have guided me with extra functionality which in return
+                                        turned out to be really good. Kudos to the team! </p>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="swiper-slide p-2" data-swiper-slide-index="1"
+                            style="width: 1110px; margin-right: 10px;">
+
+                            <div class="row">
+
+                                <div class="col-4 col-md-4 offset-md-1">
+
+                                    <div class="avatar-testimonial">
+
+                                        <img src="http://mobilebharat.com/public/img/avatar-02.jpg" alt=""
+                                            class="img-fluid mb-3 mb-md-0 shadow-lg" loading="lazy">
+
+                                    </div>
+
+                                </div>
+
+                                <div class="col-md-7 col-lg-6 text-white">
+
+                                    <h4 class="h3 font-weight-bold">Bhavya Pandey , Mumbai , India</h4>
+
+                                    <p class="text-white"> Excellent Work Done by Satyam and his team, First time
+                                        dealing with Mobilebharat.com . All I can say is, they are by far the best
+                                        freelancer I've dealt with. If you're looking for a yes-man for Mobile Apps, go
+                                        for Satyam. He has given&nbsp;me advice and recommendations on making the app
+                                        run smoother. They will straight up tell you no if it's a bad idea and give you
+                                        a better way of doing it. </p>
+
+                                    <p class="text-white"> If you're looking for a team of great developers, stop
+                                        looking and give Apps-maven a try, they will not disappoint! </p>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <div class="swiper-slide p-2" data-swiper-slide-index="2"
+                            style="width: 1110px; margin-right: 10px;">
+
+                            <div class="row">
+
+                                <div class="col-4 col-md-4 offset-md-1">
+
+                                    <div class="avatar-testimonial">
+
+                                        <img src="http://mobilebharat.com/public/img/avatar-05.jpg" alt=""
+                                            class="img-fluid mb-3 mb-md-0 shadow-lg" loading="lazy">
+
+                                    </div>
+
+                                </div>
+
+                                <div class="col-md-7 col-lg-6 text-white">
+
+                                    <h4 class="h3 font-weight-bold"> Mridul Bharti , Lucknow , India</h4>
+
+                                    <p class="text-white"> Satyam is a bright, talented programmer and problem solver.
+                                        His curiosity motivates him to continually learn and improve his projects and
+                                        his own skills. He is committed to wringing elegant code and making sure his
+                                        projects are built the “right” way. </p>
+
+                                    <p class="text-white"> </p>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="swiper-slide p-2 swiper-slide-prev" data-swiper-slide-index="3"
+                            style="width: 1110px; margin-right: 10px;">
+
+                            <div class="row">
+
+                                <div class="col-4 col-md-4 offset-md-1">
+
+                                    <div class="avatar-testimonial">
+
+                                        <img src="http://mobilebharat.com/public/img/avatar-03.jpg"
+                                            alt="Chetan Kachhadiya" class="img-fluid mb-3 mb-md-0 shadow-lg"
+                                            loading="lazy">
+
+                                    </div>
+
+                                </div>
+
+                                <div class="col-md-7 col-lg-6 text-white">
+
+                                    <h4 class="h3 font-weight-bold">Saurabh Gaur</h4>
+
+                                    <p class="text-white">Mobilebharat team is extremely skilled and has got great
+                                        critical thinking skills. They give us very earnest suggestion which helped make
+                                        the software better. They have delivered the software on time with amazing look
+                                        and feel. Good Job Satyam and team!</p>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="swiper-slide p-2 swiper-slide-active" data-swiper-slide-index="4"
+                            style="width: 1110px; margin-right: 10px;">
+
+                            <div class="row">
+
+                                <div class="col-4 col-md-4 offset-md-1">
+
+                                    <div class="avatar-testimonial">
+
+                                        <img src="http://mobilebharat.com/public/img/avatar-02.jpg" alt="Hossam"
+                                            class="img-fluid mb-3 mb-md-0 shadow-lg" loading="lazy">
+
+                                    </div>
+
+                                </div>
+
+                                <div class="col-md-7 col-lg-6 text-white">
+
+                                    <h4 class="h3 font-weight-bold">Clark Quinton</h4>
+
+                                    <p class="text-white">Satyam and his team is very talented and has got very creative
+                                        ideas. Someone who is looking for attractive and creative work I would recommend
+                                        Mobilebharat team. They have worked amazingly well for my Application and have
+                                        got many compliments for the same!</p>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="swiper-slide p-2 swiper-slide-next" data-swiper-slide-index="5"
+                            style="width: 1110px; margin-right: 10px;">
+
+                            <div class="row">
+
+                                <div class="col-4 col-md-4 offset-md-1">
+
+                                    <div class="avatar-testimonial">
+
+                                        <img src="http://mobilebharat.com/public/img/avatar-04.jpg"
+                                            alt="Brain &amp; Franco" class="img-fluid mb-3 mb-md-0 shadow-lg"
+                                            loading="lazy">
+
+                                    </div>
+
+                                </div>
+
+                                <div class="col-md-7 col-lg-6 text-white">
+
+                                    <h4 class="h3 font-weight-bold">Brain &amp; Franco</h4>
+
+                                    <p class="text-white">Satyam is very much focused and committed towards his work and
+                                        has given us completely satisfactory product. If you are looking for person who
+                                        can give your ideas wings then he is the one! He and his team has been very
+                                        cooperative and has delivered it on time!</p>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="swiper-slide p-2" data-swiper-slide-index="6"
+                            style="width: 1110px; margin-right: 10px;">
+
+                            <div class="row">
+
+                                <div class="col-4 col-md-4 offset-md-1">
+
+                                    <div class="avatar-testimonial">
+
+                                        <img src="http://mobilebharat.com/public/img/avatar-01.jpg" alt="Jeet Diyora"
+                                            class="img-fluid mb-3 mb-md-0 shadow-lg" loading="lazy">
+
+                                    </div>
+
+                                </div>
+
+                                <div class="col-md-7 col-lg-6 text-white">
+
+                                    <h4 class="h3 font-weight-bold">Kartik Mahajan</h4>
+
+                                    <p class="text-white">Great job done by Mobilebharat team. They have built
+                                        customised software for our business and we are completely driven by the
+                                        Software. They have guided me with extra functionality which in return turned
+                                        out to be really good. Kudos to the team!</p>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <div class="swiper-slide p-2" data-swiper-slide-index="7"
+                            style="width: 1110px; margin-right: 10px;">
+
+                            <div class="row">
+
+                                <div class="col-4 col-md-4 offset-md-1">
+
+                                    <div class="avatar-testimonial">
+
+                                        <img src="http://mobilebharat.com/public/img/avatar-03.jpg" alt=""
+                                            class="img-fluid mb-3 mb-md-0 shadow-lg" loading="lazy">
+
+                                    </div>
+
+                                </div>
+
+                                <div class="col-md-7 col-lg-6 text-white">
+
+                                    <h4 class="h3 font-weight-bold"> David Vargas </h4>
+
+                                    <p class="text-white"> I use Mobilebharat for all of my offshore projects currently.
+                                        Team is well qualified and have incredible level of professionalism. I'd
+                                        recommend them to anyone looking to expand in house capabilities with their very
+                                        capable staff. </p>
+
+                                    <p class="text-white"> </p>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <div class="swiper-slide p-2" data-swiper-slide-index="8"
+                            style="width: 1110px; margin-right: 10px;">
+
+                            <div class="row">
+
+                                <div class="col-4 col-md-4 offset-md-1">
+
+                                    <div class="avatar-testimonial">
+
+                                        <img src="http://mobilebharat.com/public/img/avatar-02.jpg" alt=""
+                                            class="img-fluid mb-3 mb-md-0 shadow-lg" loading="lazy">
+
+                                    </div>
+
+                                </div>
+
+                                <div class="col-md-7 col-lg-6 text-white">
+
+                                    <h4 class="h3 font-weight-bold"> Netphone Co. Group </h4>
+
+                                    <p class="text-white"> Satyam good job! We are completely satisfied with the
+                                        Integration of SIP, VOIP service in our system. He has got great developer’s
+                                        team who are very skilled and cooperative. The system is working absolutely fine
+                                        and is far better than we expected. </p>
+
+                                    <p class="text-white"> Hitesh has been the man of his words and has delivered the
+                                        finished product on time. </p>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <div class="swiper-slide p-2" data-swiper-slide-index="9"
+                            style="width: 1110px; margin-right: 10px;">
+
+                            <div class="row">
+
+                                <div class="col-4 col-md-4 offset-md-1">
+
+                                    <div class="avatar-testimonial">
+
+                                        <img src="http://mobilebharat.com/public/img/avatar-03.jpg" alt=""
+                                            class="img-fluid mb-3 mb-md-0 shadow-lg" loading="lazy">
+
+                                    </div>
+
+                                </div>
+
+                                <div class="col-md-7 col-lg-6 text-white">
+
+                                    <h4 class="h3 font-weight-bold"> Ankit Singh , Patna , India</h4>
+
+                                    <p class="text-white">Commandable work done by Mobilebharat, </p>
+
+                                    <p class="text-white">Satyam has incredible programming abilities and great bunch of
+                                        developers. He has additionally given numerous suggestions about what is right
+                                        now going in the market and has helped me improve my application. On the off
+                                        chance that you are searching for individual who can convey the quality item
+                                        with less measure of time then Hitesh is the one. He conveys finish attractive
+                                        application.</p>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="swiper-slide p-2 swiper-slide-duplicate" data-swiper-slide-index="0"
+                            style="width: 1110px; margin-right: 10px;">
+
+                            <div class="row">
+
+                                <div class="col-4 col-md-4 offset-md-1">
+
+                                    <div class="avatar-testimonial">
+
+                                        <img src="http://mobilebharat.com/public/img/avatar-01.jpg" alt=""
+                                            class="img-fluid mb-3 mb-lg-0 shadow-lg" loading="lazy">
+
+                                    </div>
+
+                                </div>
+
+                                <div class="col-md-7 col-lg-6 text-white">
+
+                                    <h4 class="h3 font-weight-bold">Vikas Tiwari , India</h4>
+
+                                    <p class="text-white"> Great job done by MobileBharat team. They have built
+                                        customised software for our business and we are completely driven by the
+                                        Software.</p>
+
+                                    <p class="text-white">They have guided me with extra functionality which in return
+                                        turned out to be really good. Kudos to the team! </p>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="swiper-pagination sr-only"></div>
+
+                    <!-- Add Arrows -->
+
+                    <div class="swiper-button-next d-none d-lg-block" tabindex="0" role="button"
+                        aria-label="Next slide"></div>
+
+                    <div class="swiper-button-prev d-none d-lg-block" tabindex="0" role="button"
+                        aria-label="Previous slide"></div>
+
+                    <span class="swiper-notification" aria-live="assertive" aria-atomic="true"></span>
+                </div>
+
+            </div>
+
+            <img src="http://mobilebharat.com/public/img/dots-square.png" alt=""
+                class="d-none d-xl-block img-fluid animate-rotate slow"
+                style="position: absolute;top: 28%;left: -270px;user-select: none;pointer-events: none;">
+
+            <img src="http://mobilebharat.com/public/img/dots-curve.png" alt=""
+                class="d-none d-xl-block img-fluid animate-updown"
+                style="position: absolute;top: 28%;right: -270px;user-select: none;pointer-events: none;">
+
+        </section>
+        <!-- Other Offers Start-->
+
+
+
+
+
+
+
+
+
+
+
+
+        <div class="container py-4">
+            <div class="row justify-content-center align-items-center">
+                <div class="col-sm-auto text-center" style="max-width:230px;">
+                    <script type="text/javascript" src="https://widget.clutch.co/static/js/widget.js"></script>
+                    <div class="clutch-widget" data-url="https://widget.clutch.co" data-widget-type="1" data-height="50"
+                        data-clutchcompany-id="1623759"><iframe id="iframe-0.39850878493341857" width="100%"
+                            src="https://widget.clutch.co/widgets/get/1?ref_domain=mobilebharat.com&amp;uid=1623759&amp;ref_path=/"
+                            height="50px" style="border: none; display: block;"
+                            title="Mobilebharat.com Clutch Review Widget 1"></iframe></div>
+                </div>
+                <div class="col-sm-auto text-center">
+                    <a target="_blank" href="https://www.goodfirms.co/company/mobilebharat-com"><img
+                            style="max-height:130px" class="img-fluid w-100"
+                            src="https://goodfirms.s3.amazonaws.com/badges/color-badge/top-software-development-companies.svg"
+                            alt="GoodFirms Badge"></a>
+                </div>
+                <div class="col-sm-auto text-center">
+                    <div id="wadline"><a href="https://wadline.com/mobilebharatcom" target="_blank"
+                            rel="noopener noreferrer"><img style="max-height: 130px"
+                                src="https://wadline.com/badges/june/badge/Badge_Colored_Web.svg" alt="badge"></a>
+                        &nbsp;</div>
+                </div>
+
+                <div class="row justify-content-center align-items-left">
+                    <div class="col-sm-auto text-left" style="max-width:230px;">
+
+                        <script>var cssid = "csscr", t = String(Date.now()).substring(0, 10); if (!document.getElementById(cssid)) { var dm = "https://www.crowdreviews.com/", head = document.getElementsByTagName("head")[0], link = document.createElement("link"), linkm = document.createElement("link"), j = document.createElement("script"); link.id = cssid, link.rel = "stylesheet", link.type = "text/css", link.href = dm + "b." + t + ".css", link.media = "all"; linkm.rel = "stylesheet", linkm.href = "//fonts.googleapis.com/css?family=Montserrat:400"; j.setAttribute("type", "text/javascript"), j.setAttribute("data-id", "138216"), j.setAttribute("src", dm + "b." + t + ".js"), j.id = "j-GjPxd4USR", head.appendChild(link), head.appendChild(linkm), head.appendChild(j) }</script>
+                        <div id="crowdreviews-badge-GjPxd4USR">
+                            <div id="t-GjPxd4USR"><span class="pull-left-GjPxd4USR"><img alt="CrowdReviews.com Logo"
+                                        src="https://www.crowdreviews.com/themes/camo/images/cr_logo_small.png"></span><span
+                                    class="pull-right-GjPxd4USR"><a href="https://www.crowdreviews.com/mobilebharatcom"
+                                        rel="nofollow" target="_blank"><i class="icon irgyb"></i><i
+                                            class="icon irgyb"></i><i class="icon irgyb"></i><i
+                                            class="icon irgyb"></i><i class="icon irgyb"></i></a></span></div>
+                            <div id="b-GjPxd4USR">Give us some love.</div>
+                            <p class="no-br-GjPxd4USR"><a href="https://www.crowdreviews.com/mobilebharatcom"
+                                    target="_blank">Write a review on your experience with us.</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <br>
+
+
+
+        <!--  <section class="py-3 py-lg-5 call-to-action">
+
+            <div class="container text-center">
+
+                <p class="text-secondary">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
+
+                <a href="#" class="btn btn-accent mt-lg-3 btn-lg px-lg-4">Contat us <i class="fas fa-arrow-right ml-1"></i></a>
+
+            </div>
+
+        </section> -->
+
+    </main>
+
+
+
+
+
+
+
+    <!--EndSection-->
+
+
+
+    <!--Footer-->
+
+    <footer>
+
+
+
+
+        <div class="bg-light py-3 py-lg-0 mt-5">
+
+            <div class="overflow-hidden">
+
+                <div class="d-none d-lg-block animate-building slow"
+                    style="height: 300px; background: url('http://mobilebharat.com/public/img/bg-contact-form.png') repeat-x center bottom / 20%; width: 5076px;">
+                </div>
+
+            </div>
+
+            <div class="container">
+                <h1>Let's Discuss Your Project</h1>
+                <form target="_blank" action="https://formsubmit.co/founder@mobilebharat.com" method="POST">
+                    <div class="form-group">
+                        <div class="form-row">
+                            <div class="col">
+                                <input type="text" name="name" class="form-control" placeholder="Full Name" required="">
+                            </div>
+                            <div class="col">
+                                <input type="email" name="email" class="form-control" placeholder="Email Address"
+                                    required="">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <textarea placeholder="Your Message" class="form-control" name="message" rows="10"
+                            required=""></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-lg btn-info btn-block">Submit Form</button>
+                </form>
+            </div>
+            <span style="padding:20px">
+
+
+                <div class="bg-primary pt-lg-5">
+
+                    <div class="container-fluid px-lg-5 pt-5 pb-2 text-white">
+
+                        <div class="row">
+
+                            <div class="col-md-4 col-lg-4 col-xl-3 mb-3 mb-md-0 text-center text-md-left">
+
+                                <img src="flipo logo.png" alt="Mobilebharat" class="img-fluid mb-3">
+
+                                <address>
+
+                                    <div class="h3 font-weight-bold">Ambedkar Nagar, Uttar Pradesh</div>
+
+                                    <div class="media align-items-baseline d-flex justify-content-center">
+
+                                        <i class="d-none d-sm-block fa fa-map-marker mr-2"></i>
+
+                                        <div>
+
+                                            Vill. and Post Ahirauli Rani Mau, Ambedkar Nagar, U.P., India.
+                                            Corporate Office - C-358/18B, Kothari Bandhu Road,Rajajipuram, Lucknow.
+                                        </div>
+
+                                    </div>
+
+                                </address>
+
+                            </div>
+
+                            <div class="d-none d-md-block col-md-2 col-lg-2 col-xl-2 offset-xl-1">
+
+                                <div class="h4 font-weight-bold mb-3">Quick Links</div>
+
+                                <ul class="list-unstyled">
+
+                                    <li class="my-3"><a class="text-white" href="about-us.html">About us</a></li>
+
+                                    <li class="my-3"><a class="text-white" href="services.html">Services</a></li>
+
+                                    <li class="my-3"><a class="text-white" href="work.html">Work</a></li>
+
+                                    <li class="my-3"><a class="text-white" href="blog.html">Blog</a></li>
+
+                                    <li class="my-3"><a class="text-white" href="https://wa.me/917398935646">Contact
+                                            us</a></li>
+
+                                </ul>
+
+                            </div>
+
+                            <div
+                                class="text-center text-sm-center text-md-left mb-3 mb-md-0 col-md-2 col-lg-2 col-xl-2 offset-xl-1">
+
+                                <div class="h4 font-weight-bold mb-3">Services</div>
+
+                                <ul class="list-unstyled">
+
+                                    <li class="my-3"><a class="text-white" href="web-development.html">Website
+                                            Development</a></li>
+
+                                    <li class="my-3"><a class="text-white" href="mobile-app-development.html">Mobile App
+                                            Development</a></li>
+
+                                    <li class="my-3"><a class="text-white"
+                                            href="artificial-intelligence-development.html">Artificial Intelligence</a>
+                                    </li>
+
+                                    <li class="my-3"><a class="text-white" href="custom-solutions.html">Custom
+                                            Solutions</a></li>
+
+                                </ul>
+
+                            </div>
+
+                            <!-- <div class="d-none d-md-block col-md-3 col-lg-3 col-xl-3">
+
+                         <div class="h4 font-weight-bold mb-3">Address</div>
+
+                         <div class="media align-items-baseline mb-3">
+
+                             <i class="fa fa-map-pin mr-2"></i>
+
+                             <div class="media-body">
+
+                                 Vill. and Post Ahirauli Rani Mau, Ambedkar Nagar, U.P., India.
+                                    Corporate Office - C-358/18B, Kothari Bandhu Road,Rajajipuram, Lucknow.
+
+                             </div>
+
+                         </div>
+
+                         <div class="media align-items-baseline">
+
+                             <i class="fa fa-map-pin mr-2"></i>
+
+                             <div class="media-body">
+                                
+                                Corporate Office - C-358/18B, Kothari Bandhu Road,Rajajipuram, Lucknow.
+
+                             </div>
+
+                         </div>
+
+                     </div> -->
+
+                            <div class="col-md-3 col-lg-3 col-xl-2 offset-xl-1 text-center text-md-left">
+
+                                <div class="h4 font-weight-bold mb-3">Contact Info</div>
+
+                                <ul class="list-unstyled">
+
+                                    <li class="mb-3"><a class="text-white" role="button"
+                                            href="mailto:support@mobilebharat.com"><i
+                                                class="fa fa-envelope mr-2"></i>support@mobilebharat.com</a></li>
+
+                                    <li class="mb-3"><a class="text-white" role="button" href="tel:+917398935646"><i
+                                                class="fa fa-mobile-alt mr-2"></i>+91-7398935646</a></li>
+
+                                    <li><a class="text-white" role="button" href="tel:0792518537"><i
+                                                class="fa fa-phone mr-2 fa-rotate-90"></i>0522-276643</a></li>
+
+                                </ul>
+
+                            </div>
+
+
+
+                            <div class="col-12 text-center my-3">
+
+                                <nav class="social-icon">
+
+                                    <a href="https://www.facebook.com/mobilebharatservices/"
+                                        class="facebook align-items-center avatar-sm d-inline-flex justify-content-center"
+                                        target="_blank"><i class="fab fa-facebook-f"></i></a>
+
+                                    <a href="https://www.linkedin.com/company/mobilebharat/"
+                                        class="linkedin align-items-center avatar-sm d-inline-flex justify-content-center"
+                                        target="_blank"><i class="fab fa-linkedin-in"></i></a>
+
+                                    <!-- <a href="skype:hitesh.devit?call" class="skype align-items-center avatar-sm d-inline-flex justify-content-center" target="_blank"><i class="fab fa-skype"></i></a> -->
+
+                                    <a href="https://www.youtube.com/channel/UC7k0wfx0-poLZbfunciCDZw/videos?view_as=subscriber"
+                                        class="youtube align-items-center avatar-sm d-inline-flex justify-content-center"
+                                        target="_blank"><i class="fab fa-youtube"></i></a>
+
+                                    <a href="https://twitter.com/mobilebharat"
+                                        class="twitter align-items-center avatar-sm d-inline-flex justify-content-center"
+                                        target="_blank"><i class="fab fa-twitter"></i></a>
+
+                                    <a href="https://www.instagram.com/mobilebharat/"
+                                        class="instagram align-items-center avatar-sm d-inline-flex justify-content-center"
+                                        target="_blank"><i class="fab fa-instagram"></i></a>
+
+                                    <a href="https://www.behance.net/mobilebharat"
+                                        class="behance align-items-center avatar-sm d-inline-flex justify-content-center"
+                                        target="_blank"><i class="fab fa-behance"></i></a>
+
+                                    <a href="https://in.pinterest.com/mobilebharat/"
+                                        class="pinterest align-items-center avatar-sm d-inline-flex justify-content-center"
+                                        target="_blank"><i class="fab fa-pinterest"></i></a>
+
+                                </nav>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="text-center copyright py-2 py-lg-3">
+
+                        <p class="text-secondary small mb-0">©
+
+                            2017-2020 - All Rights Reserved By Mobilebharat.com with <i
+                                class="fa fa-heart text-danger"></i></p>
+
+                    </div>
+
+                </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            </span>
+        </div>
+    </footer>
+
+    <div class="d-none d-lg-block cursor" style="left: 574px; top: 417px;"></div>
+
+    <!--End Footer-->
+
+
+
+    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="sr-only"
+        style="enable-background:new 0 0 512 512;">
+
+        <defs>
+
+            <svg id="webDevelopment">
+
+                <g>
+
+                    <path
+                        d="M502,0H343.13c-4.045,0-7.691,2.437-9.239,6.173c-1.547,3.737-0.691,8.038,2.168,10.898l37.42,37.42L247.533,180.437
+
+                        L131.215,64.119c-3.906-3.904-10.236-3.904-14.143,0L2.955,178.236c-3.905,3.905-3.905,10.237,0,14.143
+
+                        c1.953,1.952,4.512,2.929,7.071,2.929s5.118-0.977,7.071-2.929L124.144,85.333l139.309,139.309
+
+                        c1.953,1.952,4.512,2.929,7.071,2.929s5.118-0.977,7.071-2.929c3.905-3.905,3.905-10.237,0-14.143l-15.919-15.919L387.621,68.634
+
+                        l55.839,55.839L341.967,225.967c-3.905,3.905-3.905,10.237,0,14.143c1.953,1.952,4.512,2.929,7.071,2.929s5.118-0.977,7.071-2.929
+
+                        l101.493-101.494l37.326,37.326c1.913,1.913,4.471,2.929,7.073,2.929c1.288,0,2.588-0.249,3.825-0.761
+
+                        c3.736-1.548,6.173-5.194,6.173-9.239V10C512,4.478,507.522,0,502,0z M492,144.728L367.272,20H492V144.728z">
+                    </path>
+
+                    <path d="M331.359,250.72c-1.859-1.87-4.439-2.93-7.069-2.93s-5.21,1.06-7.07,2.93c-1.87,1.86-2.93,4.44-2.93,7.07
+
+                        s1.06,5.21,2.93,7.069c1.86,1.86,4.44,2.931,7.07,2.931s5.21-1.07,7.069-2.931c1.86-1.859,2.931-4.439,2.931-7.069
+
+                        S333.22,252.58,331.359,250.72z"></path>
+
+                    <path d="M192.487,265.355l-54.202-54.201l16.139-16.139c3.906-3.905,3.906-10.237,0.001-14.142
+
+                        c-3.906-3.904-10.236-3.904-14.143,0L2.951,318.204c-3.905,3.905-3.905,10.237,0,14.143c1.953,1.952,4.512,2.929,7.071,2.929
+
+                        c2.559,0,5.118-0.977,7.071-2.929l107.05-107.05l54.202,54.201c1.953,1.952,4.512,2.929,7.071,2.929s5.118-0.977,7.071-2.929
+
+                        C196.392,275.593,196.392,269.261,192.487,265.355z"></path>
+
+                    <path d="M256.467,366.902L256,366.901c-5.522,0-10,4.478-10,10c0,5.522,4.478,10,10,10l0.319,0.001c0.025,0,0.051,0,0.076,0
+
+                        c5.487,0,9.957-4.429,9.998-9.926C266.434,371.454,261.99,366.943,256.467,366.902z"></path>
+
+                    <path d="M502,492h-17.54v-44.813c0-4.592-3.127-8.594-7.583-9.703l-46.479-11.58L413.736,385.7l24.674-41.047
+
+                        c2.366-3.936,1.748-8.977-1.499-12.224l-38.754-38.754c-3.248-3.247-8.289-3.864-12.224-1.499l-41.048,24.674l-40.203-16.661
+
+                        l-11.58-46.479c-1.109-4.456-5.111-7.583-9.703-7.583H228.6c-4.592,0-8.594,3.127-9.703,7.583l-11.58,46.479l-40.203,16.661
+
+                        l-41.048-24.674c-3.936-2.367-8.976-1.748-12.224,1.499L75.089,332.43c-3.247,3.247-3.865,8.288-1.499,12.224L98.264,385.7
+
+                        l-16.661,40.204l-46.479,11.58c-4.456,1.109-7.583,5.111-7.583,9.703V492H10c-5.522,0-10,4.478-10,10c0,5.522,4.478,10,10,10h492
+
+                        c5.522,0,10-4.478,10-10C512,496.478,507.522,492,502,492z M464.458,492h-102.2c5.554-33.969-5.425-68.867-30.116-93.559
+
+                        c-10.827-10.827-23.519-19.062-37.72-24.477c-5.16-1.968-10.938,0.62-12.906,5.781c-1.968,5.16,0.621,10.938,5.781,12.906
+
+                        c11.551,4.404,21.882,11.11,30.703,19.932c20.887,20.888,29.724,50.749,23.931,79.416h-171.87
+
+                        c-5.792-28.668,3.045-58.529,23.933-79.416c8.908-8.908,19.35-15.656,31.035-20.058c5.169-1.946,7.78-7.715,5.834-12.883
+
+                        c-1.947-5.168-7.715-7.778-12.883-5.834c-14.366,5.411-27.195,13.698-38.129,24.632c-24.69,24.691-35.67,59.588-30.116,93.559
+
+                        H47.54v-36.997l43.788-10.909c3.077-0.767,5.607-2.946,6.821-5.875l20.521-49.52c1.214-2.93,0.967-6.262-0.668-8.98
+
+                        l-23.246-38.671l27.703-27.703l38.672,23.246c2.718,1.635,6.053,1.883,8.98,0.668l49.519-20.521
+
+                        c2.929-1.214,5.109-3.744,5.875-6.821l10.909-43.788h39.17l10.909,43.788c0.766,3.077,2.946,5.607,5.875,6.821l49.519,20.521
+
+                        c2.929,1.215,6.263,0.968,8.98-0.668l38.672-23.246l27.703,27.703l-23.246,38.671c-1.635,2.719-1.882,6.051-0.668,8.98
+
+                        l20.521,49.52c1.214,2.929,3.744,5.108,6.821,5.875l43.788,10.909V492z"></path>
+
+                </g>
+
+            </svg>
+
+
+
+            <svg id="applicationDevelopment">
+
+                <g>
+
+                    <path d="m30 11h-6v2h4v2h-4v2h4v2h-4v2h6z"></path>
+
+                    <path
+                        d="m40 16c0-2.757-2.243-5-5-5h-3v10h3c2.757 0 5-2.243 5-5zm-6-3h1c1.654 0 3 1.346 3 3s-1.346 3-3 3h-1z">
+                    </path>
+
+                    <path
+                        d="m55 44.142v-24.284c1.72-.447 3-1.999 3-3.858 0-2.206-1.794-4-4-4-1.2 0-2.266.542-3 1.382l-15.091-7.546c.058-.27.091-.549.091-.836 0-2.206-1.794-4-4-4s-4 1.794-4 4c0 .287.033.566.091.836l-15.091 7.546c-.734-.84-1.8-1.382-3-1.382-2.206 0-4 1.794-4 4 0 1.859 1.28 3.411 3 3.858v24.284c-1.72.447-3 1.999-3 3.858 0 2.206 1.794 4 4 4 1.2 0 2.266-.542 3-1.382l15.091 7.546c-.058.27-.091.549-.091.836 0 2.206 1.794 4 4 4s4-1.794 4-4c0-.287-.033-.566-.091-.836l15.091-7.546c.734.84 1.8 1.382 3 1.382 2.206 0 4-1.794 4-4 0-1.859-1.28-3.411-3-3.858zm-1-30.142c1.103 0 2 .897 2 2s-.897 2-2 2-2-.897-2-2 .897-2 2-2zm-22-11c1.103 0 2 .897 2 2s-.897 2-2 2-2-.897-2-2 .897-2 2-2zm-3 4.618c.734.84 1.8 1.382 3 1.382s2.266-.542 3-1.382l15.091 7.546c-.058.27-.091.549-.091.836s.033.566.091.836l-15.091 7.546c-.734-.84-1.8-1.382-3-1.382s-2.266.542-3 1.382l-15.091-7.546c.058-.27.091-.549.091-.836s-.033-.566-.091-.836zm6.714 20.845c.964 1.193 1.874 2.694 2.492 4.537h-5.206v-2.142c1.241-.323 2.248-1.217 2.714-2.395zm3.286 9.537c0 1.076-.105 2.07-.277 3h-5.723v-6h5.727c.174.929.273 1.927.273 3zm-14 0c0-1.073.099-2.071.273-3h5.727v6h-5.717c-.175-.931-.283-1.925-.283-3zm6 5v7.155c-1.552-1.169-3.95-3.474-5.193-7.155zm2 7.173v-7.173h5.205c-1.237 3.716-3.644 6.013-5.205 7.173zm-1-21.173c-1.103 0-2-.897-2-2s.897-2 2-2 2 .897 2 2-.897 2-2 2zm-1 1.858v2.142h-5.206c.618-1.842 1.528-3.344 2.492-4.537.466 1.178 1.473 2.072 2.714 2.395zm-3.21-4.845c-1.569 1.61-3.199 3.903-4.095 6.987h-3.695c1.355-3.254 4.009-5.88 7.433-7.166zm-8.79 11.987c0-1.027.122-2.031.351-3h3.893c-.153.939-.244 1.935-.244 3 0 1.07.103 2.058.257 3h-3.893c-.23-.965-.364-1.966-.364-3zm4.694 5c.986 3.417 2.858 5.842 4.537 7.438-3.722-1.13-6.742-3.885-8.228-7.438zm16.612 0h3.692c-1.487 3.553-4.506 6.308-8.228 7.438 1.677-1.596 3.55-4.021 4.536-7.438zm4.694-5c0 1.034-.134 2.035-.363 3h-3.893c.153-.942.256-1.93.256-3 0-1.065-.091-2.061-.245-3h3.893c.23.969.352 1.973.352 3zm-4.695-5c-.896-3.084-2.525-5.377-4.095-6.987l.357-.178c3.424 1.285 6.078 3.912 7.433 7.166h-3.695zm-32.305-17c0-1.103.897-2 2-2s2 .897 2 2-.897 2-2 2-2-.897-2-2zm2 34c-1.103 0-2-.897-2-2s.897-2 2-2 2 .897 2 2-.897 2-2 2zm22 11c-1.103 0-2-.897-2-2s.897-2 2-2 2 .897 2 2-.897 2-2 2zm3-4.618c-.734-.84-1.8-1.382-3-1.382s-2.266.542-3 1.382l-15.091-7.546c.058-.27.091-.549.091-.836 0-1.859-1.28-3.411-3-3.858v-24.284c.79-.205 1.478-.643 2-1.24l12.114 6.057c-4.928 2.544-8.114 7.652-8.114 13.325 0 8.271 6.729 15 15 15s15-6.729 15-15c0-5.673-3.186-10.781-8.113-13.325l12.113-6.057c.521.597 1.21 1.035 2 1.24v24.284c-1.72.447-3 1.999-3 3.858 0 .287.033.566.091.836zm19-6.382c-1.103 0-2-.897-2-2s.897-2 2-2 2 .897 2 2-.897 2-2 2z">
+                    </path>
+
+                </g>
+
+            </svg>
+
+
+
+            <svg id="realityDevelopment">
+
+                <path
+                    d="m262.261719 126.28125c-.066407-.257812-.128907-.515625-.128907-.644531 0-2.058594 3.027344-3.476563 5.277344-3.476563 1.417969 0 2.511719.449219 2.832032 1.675782l9.851562 34.890624 9.785156-34.890624c.320313-1.226563 1.417969-1.675782 2.832032-1.675782 2.253906 0 5.28125 1.480469 5.28125 3.476563 0 .195312-.066407.386719-.132813.644531l-12.359375 40.492188c-.578125 1.933593-2.960938 2.832031-5.40625 2.832031s-4.765625-.898438-5.40625-2.832031zm0 0">
+                </path>
+
+                <path
+                    d="m302.433594 124.738281c0-1.351562 1.09375-2.574219 2.703125-2.574219h12.746093c8.433594 0 15.257813 3.21875 15.257813 13.453126 0 7.402343-3.605469 11.394531-8.433594 12.875l8.433594 15.644531c.257813.320312.320313.773437.320313 1.03125 0 2.125-2.765626 4.375-5.214844 4.375-1.15625 0-2.25-.707031-2.894532-1.996094l-9.140624-17.769531h-5.410157v16.804687c0 1.738281-2.058593 2.640625-4.183593 2.640625-2.0625 0-4.1875-.902344-4.1875-2.640625v-41.84375zm8.367187 4.761719v13.710938h7.082031c4.183594 0 6.886719-1.738282 6.886719-6.824219 0-5.085938-2.703125-6.886719-6.886719-6.886719zm0 0">
+                </path>
+
+                <path
+                    d="m481.066406 484.472656-4.277344-25.03125c-.695312-4.082031-4.574218-6.828125-8.65625-6.128906-4.082031.699219-6.824218 4.574219-6.128906 8.65625l4.277344 25.027344c.429688 2.53125-.242188 5.003906-1.898438 6.964844-1.652343 1.960937-3.976562 3.039062-6.542968 3.039062h-52.570313l-9.390625-57.699219c-.664062-4.085937-4.507812-6.859375-8.605468-6.195312-4.089844.664062-6.863282 4.515625-6.199219 8.605469l9 55.289062h-298.742188l8.996094-55.289062c.667969-4.089844-2.109375-7.941407-6.195313-8.605469-4.082031-.664063-7.941406 2.105469-8.609374 6.195312l-9.386719 57.699219h-52.574219c-2.566406 0-4.890625-1.078125-6.542969-3.039062-1.652343-1.960938-2.328125-4.433594-1.894531-6.964844l10.246094-59.988282c3.503906-20.519531 17.121094-37.886718 35.71875-46.421874.980468-.207032 1.890625-.605469 2.6875-1.15625 2.046875-.824219 4.152344-1.546876 6.300781-2.152344l90.007813-19.125c23.925781 16.054687 51.746093 24.527344 80.617187 24.527344s56.6875-8.472657 80.617187-24.527344l90.003907 19.125c23.125 6.535156 40.660156 26.03125 44.707031 49.730468.699219 4.082032 4.574219 6.824219 8.65625 6.128907 4.082031-.695313 6.828125-4.574219 6.128906-8.65625-5.03125-29.464844-26.890625-53.691407-55.683594-61.714844-.148437-.042969-.300781-.078125-.457031-.109375l-93.386719-19.847656-9.042968-1.921875c-5.820313-1.167969-12.328125-9.140625-12.328125-18.054688v-25.980469c13.839843-12.414062 28.265625-26.988281 34.355469-35.9375 10.335937-15.171874 16.34375-32.917968 17.375-51.3125l.265624-4.761718h3.5c6.140626 0 11.382813-3.925782 13.347657-9.402344h7.703125c8.515625 0 15.445312-6.925781 15.445312-15.441406v-64.976563c0-8.515625-6.929687-15.445312-15.445312-15.445312h-7.703125c-1.851563-5.160157-6.613281-8.941407-12.296875-9.363281-2.746094-20.097657-11.445313-38.914063-24.878906-53.589844-33.042969-36.082032-81.609376-36.621094-84.339844-36.621094-.019532 0-.039063 0-.054688 0h-12.960937c-2.109375.0195312-51.117188.265625-84.40625 36.613281-13.4375 14.671875-22.132813 33.488281-24.882813 53.59375-5.699218.40625-10.480468 4.195313-12.335937 9.367188h-7.703125c-8.515625 0-15.445313 6.929687-15.445313 15.445312v24.988281h-11.683593c-14.199219 0-25.746094 11.546876-25.746094 25.746094v202.5625c-21.597656 10.996094-37.277344 31.789063-41.441406 56.164063l-10.246094 59.992187c-1.171875 6.859375.730468 13.84375 5.214844 19.160156 4.488281 5.316407 11.050781 8.367188 18.007812 8.367188h434.277344c6.957031 0 13.523437-3.050781 18.007812-8.367188 4.488282-5.316406 6.390625-12.300781 5.21875-19.160156zm-111.476562-369.898437h6.871094c.246093 0 .445312.199219.445312.445312v64.972657c0 .246093-.199219.445312-.445312.445312h-6.871094zm-68.160156 238.027343c-18.644532 9.902344-39.363282 15.078126-60.726563 15.078126-21.371094 0-42.097656-5.179688-60.746094-15.085938 10.382813-6.050781 16.53125-18.875 16.53125-29.761719v-13.222656c6.148438 4.902344 11.277344 8.484375 14.222657 9.742187 9.53125 4.0625 19.761718 6.097657 29.992187 6.097657s20.460937-2.03125 29.988281-6.097657c2.949219-1.257812 8.078125-4.84375 14.222656-9.742187v13.222656c0 10.894531 6.164063 23.734375 16.515626 29.769531zm-140.542969-305.855468c28.71875-31.359375 72.871093-31.746094 73.324219-31.746094h13.003906.003906c.652344 0 44.511719.308594 73.300781 31.75 10.917969 11.925781 18.144531 27.113281 20.773438 43.421875h-201.183594c2.632813-16.316406 9.859375-31.503906 20.777344-43.425781zm-34.109375 58.425781h4.917968.125 222.769532v84.667969h-83.445313c-4.003906 0-7.929687-1.09375-11.355469-3.164063-11.785156-7.117187-26.425781-7.117187-38.210937 0-3.425781 2.070313-7.351563 3.164063-11.355469 3.164063h-13.542968c-4.140626 0-7.5 3.359375-7.5 7.5s3.359374 7.5 7.5 7.5h13.542968c6.734375 0 13.34375-1.839844 19.109375-5.324219 7.003907-4.226563 15.703125-4.226563 22.703125 0 5.765625 3.484375 12.371094 5.324219 19.105469 5.324219h65.75l-.222656 3.917968c-.878907 15.675782-5.992188 30.789063-14.792969 43.710938-10.828125 15.902344-50.191406 50.152344-57.066406 53.082031-15.324219 6.535157-32.894532 6.535157-48.214844 0-2.257812-.960937-10.507812-6.976562-22.542969-17.605469-.0625-.058593-.128906-.117187-.195312-.171874-1.480469-1.308594-3.015625-2.6875-4.605469-4.132813-13.777344-12.53125-25.164062-24.476563-29.722656-31.171875-8.800782-12.921875-13.917969-28.039062-14.796875-43.71875l-.21875-3.910156h17.238281c4.144531 0 7.5-3.359375 7.5-7.5 0-4.144532-3.355469-7.5-7.5-7.5h-34.972656zm-22.316406 9.847656c0-.246093.199218-.445312.445312-.445312h6.871094v65.863281h-6.871094c-.246094 0-.445312-.199219-.445312-.445312zm-37.433594 50.734375c0-5.925781 4.820312-10.746094 10.746094-10.746094h11.6875v24.984376c0 8.515624 6.929687 15.445312 15.445312 15.445312h7.699219c1.964843 5.476562 7.207031 9.402344 13.351562 9.402344h3.53125l.269531 4.753906c1.03125 18.398438 7.039063 36.148438 17.375 51.320312 6.089844 8.949219 20.515626 23.523438 34.355469 35.9375v25.980469c0 8.914063-6.507812 16.886719-12.410156 18.074219l-8.960937 1.902344-93.089844 19.78125zm0 0">
+                </path>
+
+            </svg>
+
+
+
+            <svg id="customSolution">
+
+                <g>
+
+                    <path
+                        d="m63 22v-18c0-1.654-1.346-3-3-3h-22c-1.654 0-3 1.346-3 3h-7.774l-.928 3.589c-3.457.714-6.697 2.056-9.648 3.996l-3.193-1.882-6.753 6.752 1.883 3.193c-1.939 2.95-3.282 6.19-3.996 9.649l-3.591.929v9.549l3.59.928c.714 3.459 2.057 6.698 3.996 9.648l-1.883 3.193 1.456 1.456h-2.159c-2.757 0-5 2.243-5 5v3h62v-3c0-2.757-2.243-5-5-5h-2.159l1.456-1.456-1.883-3.193c1.939-2.95 3.282-6.189 3.996-9.648l3.59-.929v-9.549l-3.59-.928c-.303-1.463-.724-2.901-1.257-4.298h1.847c1.654.001 3-1.345 3-2.999zm-17-12c0-1.654 1.346-3 3-3s3 1.346 3 3-1.346 3-3 3-3-1.346-3-3zm1.586 13-4 4h-.586v-4h-2c0-4.411 3.589-8 8-8s8 3.589 8 8zm-6.586 2v4h3.414l4-4h.897c1.754 3.03 2.689 6.472 2.689 10 0 .717-.049 1.433-.125 2.145-.279-.085-.569-.145-.875-.145h-16c-1.654 0-3 1.346-3 3v.374c-.004-.001-.007-.002-.011-.003l-3.538-.71c-.502-.144-.914-.48-1.171-.918.548-.481.999-1.067 1.296-1.743h.424c1.654 0 3-1.346 3-3 0-.648-.211-1.244-.562-1.735.861-.775 1.404-1.764 1.527-2.785.023-.19.035-.382.035-.575 0-1.506-.719-2.944-1.924-3.847l-1.547-1.16c-.771-.579-1.727-.898-2.691-.898h-.395c-.879 0-1.722.252-2.443.723-.722-.471-1.564-.723-2.443-.723h-.395c-.964 0-1.92.319-2.691.897l-1.547 1.16c-1.205.904-1.924 2.342-1.924 3.848 0 .193.012.385.034.571.123 1.025.667 2.015 1.527 2.789-.35.491-.561 1.087-.561 1.735 0 1.654 1.346 3 3 3h.424c.297.677.749 1.263 1.297 1.744-.252.436-.649.768-1.094.897l-3.617.729c-1.101.223-2.05.81-2.753 1.611-.831-2.222-1.257-4.561-1.257-6.981 0-11.028 8.972-20 20-20 1.007 0 2.009.097 3 .246v6.754c0 1.654 1.346 3 3 3zm-27 20.272c0-1.422 1.012-2.659 2.405-2.94l1.853-.376.994 6.854 4.748-3.56 4.748 3.561.994-6.852 1.85.373c.14.029.275.071.408.118v7.55c0 1.302.839 2.402 2 2.816v2.184h-20zm5-10.272c-.552 0-1-.448-1-1s.448-1 1-1zm.78-4h-.78c-.257 0-.502.042-.74.103l-.354-.317c-.506-.452-.82-1.002-.887-1.553-.013-.108-.019-.218-.019-.328 0-.879.42-1.72 1.123-2.248l1.547-1.16c.428-.32.958-.497 1.492-.497h.395c.655 0 1.274.253 1.742.713l.701.689.701-.688c.468-.461 1.087-.714 1.742-.714h.395c.534 0 1.064.177 1.492.497l1.547 1.16c.703.528 1.123 1.368 1.123 2.248 0 .11-.006.22-.021.333-.065.547-.38 1.097-.887 1.549l-.354.316c-.237-.061-.482-.103-.738-.103h-1-1.764c-1.309 0-2.619-.309-3.789-.895l-.211-.105h-.236c-.883 0-1.67.391-2.22 1zm9.22 2c.552 0 1 .448 1 1s-.448 1-1 1zm-1.622 8.379c.13.059.267.108.405.154l-.531 3.656-1.826-1.37zm-6.378-6.379v-2c0-.486.349-.893.81-.982 1.379.643 2.904.982 4.426.982h.764v2c0 1.654-1.346 3-3 3s-3-1.346-3-3zm3 5c.541 0 1.053-.108 1.541-.268.082.14.17.276.268.405l-1.809 2.261-1.807-2.259c.098-.13.186-.266.267-.407.488.16.999.268 1.54.268zm-3.37 1.388 1.945 2.431-1.826 1.37-.53-3.649c.139-.045.278-.092.411-.152zm15.37 11.612h3.367l-.25 2h-3.117zm9.883-6h-5.766l-.5 4h-4.617c-.552 0-1-.448-1-1v-10c0-.552.448-1 1-1h16c.552 0 1 .448 1 1v10c0 .552-.448 1-1 1h-4.617zm-1.016 8h-3.735l.75-6h2.234zm-35.654-1.774 1.74-2.952-.362-.526c-2.094-3.033-3.492-6.409-4.157-10.036l-.115-.628-3.319-.858v-6.451l3.318-.857.115-.628c.665-3.627 2.063-7.003 4.157-10.036l.362-.526-1.74-2.953 4.562-4.561 2.952 1.739.526-.362c3.035-2.094 6.411-3.493 10.035-4.156l.629-.115.858-3.32h6.226v7.228c-.993-.135-1.995-.228-3-.228-12.131 0-22 9.869-22 22 0 3.276.708 6.419 2.09 9.354-.057.299-.09.606-.09.918v9.728h-1.013zm51.787 6.774v1h-58v-1c0-1.654 1.346-3 3-3h52c1.654 0 3 1.346 3 3zm-14.117-5-.25-2h4.367c1.172 0 2.179-.682 2.673-1.665l1.115 1.891-1.775 1.774zm10.683-24.711.114.628 3.32.857v6.451l-3.318.857-.115.628c-.6 3.271-1.802 6.335-3.566 9.131v-8.841c0-.477-.122-.921-.32-1.322.202-1.211.319-2.445.319-3.678 0-3.496-.832-6.917-2.407-10h4.395c.71 1.703 1.247 3.476 1.578 5.289zm-5.135-16.67c.961-.912 1.569-2.192 1.569-3.619 0-2.757-2.243-5-5-5s-5 2.243-5 5c0 1.427.608 2.707 1.57 3.619-3.827 1.404-6.57 5.074-6.57 9.381h-1c-.552 0-1-.449-1-1v-18c0-.551.448-1 1-1h22c.552 0 1 .449 1 1v18c0 .551-.448 1-1 1h-1c0-4.308-2.743-7.977-6.569-9.381z">
+                    </path>
+
+                    <path d="m23 51h2v2h-2z"></path>
+
+                    <path d="m23 47h2v2h-2z"></path>
+
+                </g>
+
+            </svg>
+
+        </defs>
+
+    </svg>
+
+    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="sr-only"
+        style="enable-background:new 0 0 512 512;">
+
+        <defs>
+
+            <svg id="mobilebharat-Managed" viewBox="0 0 480 480">
+
+                <g>
+
+                    <g>
+
+
+
+                        <g>
+
+
+
+                            <path
+                                d="M429.688,90.304l-40-40c-2.678-2.681-6.869-3.115-10.04-1.04L335.2,78.4l-47.928-20L279.92,6.864    C279.355,2.924,275.98-0.001,272,0h-64c-3.98-0.001-7.355,2.924-7.92,6.864L192.72,58.4l-47.88,20l-44.456-29.12    c-3.171-2.075-7.362-1.641-10.04,1.04l-40,40c-2.684,2.685-3.112,6.886-1.024,10.056l29.6,44.96L73.96,156.8l14.688,6.352    l6.68-15.424c1.073-2.478,0.823-5.33-0.664-7.584l-28.416-43.12L97.04,66.232l42.576,27.888c2.229,1.443,5.025,1.701,7.48,0.688    l56-23.448c2.586-1.096,4.408-3.467,4.8-6.248L214.936,16h50.128l7.016,49.136c0.392,2.781,2.214,5.152,4.8,6.248l56,23.432    c2.452,1.013,5.246,0.755,7.472-0.688l42.592-27.872l31.008,31.008l-20.8,35.2c-1.238,2.087-1.462,4.624-0.608,6.896l8.872,23.432    l14.968-5.664l-7.512-19.832l22.04-37.264C432.772,96.89,432.268,92.887,429.688,90.304z"
+                                data-original="#000000" class="active-path" data-old_color="#000000" fill="#F60334">
+                            </path>
+
+
+
+                        </g>
+
+
+
+                    </g>
+
+                    <g>
+
+
+
+                        <g>
+
+
+
+                            <path
+                                d="M325.656,306.344l-24-24c-1.5-1.5-3.534-2.344-5.656-2.344H184c-2.122,0-4.156,0.844-5.656,2.344l-24,24    c-1.5,1.5-2.344,3.534-2.344,5.656v160c0,4.418,3.582,8,8,8h160c4.418,0,8-3.582,8-8V312    C328,309.878,327.156,307.844,325.656,306.344z M267.312,296h25.376L264,324.688L251.312,312L267.312,296z M252.688,336    l-10.344,10.344c-1.505,1.497-2.349,3.533-2.344,5.656c-0.015-2.102-0.857-4.114-2.344-5.6L227.312,336L240,323.312L252.688,336z     M244.688,296L240,300.688L235.312,296H244.688z M212.688,296l16,16L216,324.688L187.312,296H212.688z M209,464h-41V315.312l8-8    l34.344,34.344l13.2,13.2L209,464z M225.144,464l14.784-110.944c0.048-0.337,0.072-0.676,0.072-1.016    c0.002,0.513,0.055,1.025,0.16,1.528L262.24,464H225.144z M312,464h-33.44l-21.872-109.368l12.968-12.976L304,307.312l8,8V464z"
+                                data-original="#000000" class="active-path" data-old_color="#000000" fill="#F60334">
+                            </path>
+
+
+
+                        </g>
+
+
+
+                    </g>
+
+                    <g>
+
+
+
+                        <g>
+
+
+
+                            <path
+                                d="M296,104h-72c-26.499,0.026-47.974,21.501-48,48v48c0.04,35.33,28.67,63.96,64,64c35.33-0.04,63.96-28.67,64-64v-88    C304,107.582,300.418,104,296,104z M288,200c0,26.51-21.49,48-48,48c-26.51,0-48-21.49-48-48v-32h64    c11.824-0.003,23.227-4.393,32-12.32V200z M256,152h-64c0-17.673,14.327-32,32-32h64C288,137.673,273.673,152,256,152z"
+                                data-original="#000000" class="active-path" data-old_color="#000000" fill="#F60334">
+                            </path>
+
+
+
+                        </g>
+
+
+
+                    </g>
+
+                    <g>
+
+
+
+                        <g>
+
+
+
+                            <path
+                                d="M477.656,338.344l-24-24c-1.5-1.5-3.534-2.344-5.656-2.344h-64c-2.122,0-4.156,0.844-5.656,2.344l-24,24    c-1.5,1.5-2.344,3.534-2.344,5.656v128c0,4.418,3.582,8,8,8h112c4.418,0,8-3.582,8-8V344    C480,341.878,479.156,339.844,477.656,338.344z M464,464h-40V344h-16v120h-40V347.312l16-16l18.344,18.344L408,344l5.656-5.656    L403.312,328h26.008l-10.808,10.168L424,344l5.488,5.832l19.072-17.96l15.44,15.44V464z"
+                                data-original="#000000" class="active-path" data-old_color="#000000" fill="#F60334">
+                            </path>
+
+
+
+                        </g>
+
+
+
+                    </g>
+
+                    <g>
+
+
+
+                        <g>
+
+
+
+                            <path
+                                d="M424,176h-15.736c-22.02,0.044-39.881,17.844-40,39.864l-0.128,40.056c-0.088,26.465,21.294,47.991,47.76,48.08    c0.053,0,0.107,0,0.16,0c26.457-0.031,47.9-21.463,47.944-47.92V216C463.974,193.92,446.08,176.026,424,176z M384.264,215.92    C384.307,202.799,394.88,192.144,408,192c0.001,13.152-10.584,23.855-23.736,24V215.92z M448,256.056    c-0.031,17.62-14.3,31.9-31.92,31.944c-17.629,0-31.92-14.291-31.92-31.92c0-0.027,0-0.053,0-0.08l0.08-24    c12.506-0.075,24.257-5.995,31.76-16c7.554,10.072,19.41,16,32,16V256.056z M424,192c13.255,0,24,10.745,24,24    C434.745,216,424,205.255,424,192z"
+                                data-original="#000000" class="active-path" data-old_color="#000000" fill="#F60334">
+                            </path>
+
+
+
+                        </g>
+
+
+
+                    </g>
+
+                    <g>
+
+
+
+                        <g>
+
+
+
+                            <path
+                                d="M125.656,338.344l-24-24c-1.5-1.5-3.534-2.344-5.656-2.344H32c-2.122,0-4.156,0.844-5.656,2.344l-24,24    C0.844,339.844,0,341.878,0,344v128c0,4.418,3.582,8,8,8h112c4.418,0,8-3.582,8-8V344    C128,341.878,127.156,339.844,125.656,338.344z M112,464H72V344H56v120H16V347.312l16-16l18.344,18.344L56,344l5.656-5.656    L51.312,328H77.32l-10.808,10.168L72,344l5.488,5.832l19.072-17.96l15.44,15.44V464z"
+                                data-original="#000000" class="active-path" data-old_color="#000000" fill="#F60334">
+                            </path>
+
+
+
+                        </g>
+
+
+
+                    </g>
+
+                    <g>
+
+
+
+                        <g>
+
+
+
+                            <path
+                                d="M72,176H56.264c-22.02,0.044-39.881,17.844-40,39.864l-0.128,40.056c-0.088,26.465,21.294,47.991,47.76,48.08    c0.053,0,0.107,0,0.16,0c26.457-0.031,47.9-21.463,47.944-47.92V216C111.974,193.92,94.08,176.026,72,176z M72,192    c10.134,0.042,19.15,6.445,22.528,16H80c-10.134-0.042-19.15-6.445-22.528-16H72z M40,198.464v1.464    c0.01,2.129-0.841,4.172-2.36,5.664c-1.04,1.012-2.347,1.706-3.768,2C35.181,204.116,37.279,200.992,40,198.464z M96,256.08    c-0.044,17.611-14.309,31.876-31.92,31.92c-17.629,0-31.92-14.291-31.92-31.92c0-0.027,0-0.053,0-0.08l0.104-32.064    c6.263-0.035,12.26-2.539,16.688-6.968c1.265-1.281,2.383-2.697,3.336-4.224C59.711,219.955,69.651,223.992,80,224h16V256.08z"
+                                data-original="#000000" class="active-path" data-old_color="#000000" fill="#F60334">
+                            </path>
+
+
+
+                        </g>
+
+
+
+                    </g>
+
+                </g>
+
+
+
+            </svg>
+
+
+
+            <svg id="Client-Managed" viewBox="0 0 496 496">
+
+
+
+                <g>
+
+
+
+                    <path
+                        d="m496 208h-17.976562l-26.792969 14.097656c-3.015625-1.664062-6.152344-3.074218-9.535157-3.921875l-33.703124-8.433593v-3.832032c14.910156-10.40625 24.007812-27.597656 24.007812-45.910156v-13.984375c0-31.078125-24.351562-57.085937-54.28125-57.992187-1.519531-.039063-3.015625.015624-4.519531.089843l8.738281-20.457031-42.363281-42.351562-24.972657 16.253906c-9.488281-5.34375-19.523437-9.503906-29.945312-12.421875l-6.167969-29.136719h-60.96875l-6.167969 29.144531c-10.421874 2.917969-20.464843 7.078125-29.945312 12.421875l-24.972656-16.253906-42.328125 42.328125 8.589843 20.472656c-.328124-.015625-.640624-.074219-.96875-.082031-15.320312-.445312-29.75 5.144531-40.710937 15.785156-10.976563 10.632813-17.015625 24.902344-17.015625 40.183594v16c0 18.3125 9.089844 35.496094 24 45.902344v3.839844l-21.984375 5.496093-39.847656-23.238281h-26.167969v165.769531l78.703125 26.230469h15.328125l1.914062-6.703125 24.125 14.480469c.394532 13.117187 10.914063 23.671875 24.019532 24.132812.460937 13.050782 10.949218 23.539063 24 24 .460937 13.050782 10.949218 23.539063 24 24 .476562 13.355469 11.414062 24.089844 24.878906 24.089844 5 0 9.902344-1.558594 14.023438-4.335938l7.085937 6.257813c4.441406 3.910156 10.160156 6.078125 16.097656 6.078125h1.480469c13.3125 0 24.144531-10.761719 24.3125-24.03125 13.167969-.167969 23.832031-10.832031 24-24 13.175781-.167969 23.847656-10.847656 24-24.023438 13.296875-.3125 24.03125-11.175781 24.03125-24.546874 0-.804688-.039062-1.597657-.121094-2.398438l144.121094-72.054688zm-80-61.984375v13.984375c0 14.199219-7.671875 27.464844-20.023438 34.617188l-4 2.3125.03125 25.316406 39.96875 9.984375-87.976562 46.304687v-21.550781c0-10.753906-4.34375-20.601563-11.457031-27.878906l27.457031-6.859375v-25.335938l-3.992188-2.308594c-12.34375-7.136718-20.007812-20.402343-20.007812-34.601562v-16c0-10.910156 4.3125-21.113281 12.152344-28.710938 7.832031-7.59375 18.222656-11.6875 29.085937-11.265624 21.371094.640624 38.761719 19.480468 38.761719 41.992187zm-155.9375 126.230469-36.214844-11.574219c-16.503906-5.289063-34.367187-6.078125-51.261718-2.335937l-4.585938 1.015624v-2.367187c0-11.03125 7.480469-20.609375 18.175781-23.289063l45.824219-11.449218v-25.335938l-3.992188-2.308594c-12.34375-7.136718-20.007812-20.402343-20.007812-34.601562v-16c0-10.910156 4.3125-21.113281 12.152344-28.710938 7.832031-7.59375 18.289062-11.6875 29.085937-11.265624 21.371094.640624 38.761719 19.480468 38.761719 41.992187v13.984375c0 14.199219-7.671875 27.464844-20.023438 34.617188l-4 2.3125.03125 25.316406 45.816407 11.449218c10.695312 2.679688 18.175781 12.257813 18.175781 23.289063v29.976563l-1.976562 1.039062h-4.902344l-49.183594-14.054688c-3.875-1.097656-7.867188-1.546874-11.875-1.699218zm-90.269531-152.511719c15.023437-29.109375 45.261719-47.734375 78.207031-47.734375 32.632812 0 62.742188 18.375 77.878906 47.089844-3.808594 7.636718-5.878906 16.09375-5.878906 24.910156v16c0 18.3125 9.089844 35.496094 24 45.902344v3.839844l-32 8.011718-32.007812-8.011718v-3.832032c14.910156-10.40625 24.007812-27.597656 24.007812-45.910156v-13.984375c0-31.078125-24.351562-57.085937-54.28125-57.992187-15.3125-.449219-29.75 5.144531-40.710938 15.785156-10.96875 10.640625-17.007812 24.910156-17.007812 40.191406v16c0 18.3125 9.089844 35.496094 24 45.902344v3.839844l-32 8.011718-32.007812-8.011718v-3.832032c14.910156-10.40625 24.007812-27.597656 24.007812-45.910156v-13.984375c0-9.414063-2.265625-18.351563-6.207031-26.28125zm-36.792969-48.382813 25.558594-25.558593 22.496094 14.640625 4.304687-2.640625c10.785156-6.609375 22.441406-11.449219 34.640625-14.367188l4.921875-1.179687 5.566406-26.246094h35.03125l5.550781 26.238281 4.921876 1.175781c12.199218 2.921876 23.855468 7.761719 34.640624 14.371094l4.304688 2.640625 22.496094-14.640625 25.527344 25.535156-9.074219 21.246094c-6.175781 2.65625-11.902344 6.394532-16.886719 11.226563-.328125.320312-.609375.664062-.929688.992187-18.847656-29.960937-52.167968-48.785156-88.070312-48.785156-36.160156 0-69.574219 19-88.375 49.265625-5.03125-5.265625-11.015625-9.53125-17.648438-12.511719zm-29 150.894532v-25.335938l-3.992188-2.308594c-12.34375-7.136718-20.007812-20.402343-20.007812-34.601562v-16c0-10.910156 4.3125-21.113281 12.152344-28.710938 7.832031-7.59375 18.246094-11.6875 29.085937-11.265624 21.371094.640624 38.761719 19.480468 38.761719 41.992187v13.984375c0 14.199219-7.671875 27.464844-20.023438 34.617188l-4 2.3125.03125 25.316406 27.449219 6.859375c-7.113281 7.277343-11.457031 17.125-11.457031 27.878906v5.925781l-24.953125 5.546875.648437-2.265625.304688-14.785156-42.191406-24.613281zm-88-14.246094h5.832031l57.535157 33.558594-29.03125 116.121094-34.335938-11.449219zm65.296875 160-15.746094-5.246094 28.203125-112.800781 18.246094 10.640625v2.285156l-30.03125 105.121094zm54.703125 23.03125c0-2.359375.953125-4.671875 2.625-6.34375l14.0625-14.0625c1.671875-1.671875 3.984375-2.625 6.34375-2.625 4.945312 0 8.96875 4.023438 8.96875 8.96875 0 2.359375-.953125 4.671875-2.625 6.34375l-14.0625 14.0625c-1.671875 1.671875-3.984375 2.625-6.34375 2.625-4.945312 0-8.96875-4.023438-8.96875-8.96875zm24 24c0-2.359375.953125-4.671875 2.625-6.34375l14.0625-14.0625c1.671875-1.671875 3.984375-2.625 6.34375-2.625 4.945312 0 8.96875 4.023438 8.96875 8.96875 0 2.359375-.953125 4.671875-2.625 6.34375l-14.0625 14.0625c-1.671875 1.671875-3.984375 2.625-6.34375 2.625-4.945312 0-8.96875-4.023438-8.96875-8.96875zm24 24c0-2.359375.953125-4.671875 2.625-6.34375l14.0625-14.0625c1.671875-1.671875 3.984375-2.625 6.34375-2.625 4.945312 0 8.96875 4.023438 8.96875 8.96875 0 2.359375-.953125 4.671875-2.625 6.34375l-14.0625 14.0625c-1.671875 1.671875-3.984375 2.625-6.34375 2.625-4.945312 0-8.96875-4.023438-8.96875-8.96875zm32.96875 32.96875c-4.945312 0-8.96875-4.023438-8.96875-8.96875 0-2.359375.953125-4.671875 2.625-6.34375l14.0625-14.0625c1.671875-1.671875 3.984375-2.625 6.34375-2.625 4.945312 0 8.96875 4.023438 8.96875 8.96875 0 2.359375-.953125 4.671875-2.625 6.34375l-14.0625 14.0625c-1.671875 1.671875-3.984375 2.625-6.34375 2.625zm38.6875 8h-1.480469c-2.039062 0-3.992187-.742188-5.511719-2.089844l-5.984374-5.277344 6.007812-6.007812c2.144531-2.144531 3.808594-4.695312 5.039062-7.433594l7.273438 6.054688c1.902344 1.585937 3 3.921875 3 6.410156 0 4.601562-3.742188 8.34375-8.34375 8.34375zm71.742188-72h-1.382813c-2.007813 0-3.96875-.710938-5.503906-2l-43.382813-36.152344-10.25 12.296875 42.128906 35.101563c1.894532 1.585937 2.992188 3.921875 2.992188 6.410156 0 4.601562-3.742188 8.34375-8.34375 8.34375h-1.746094c-1.941406 0-3.839844-.6875-5.335937-1.9375l-43.453125-36.207031-10.25 12.296875 42.128906 35.105468c1.902344 1.574219 3 3.910157 3 6.398438 0 4.601562-3.742188 8.34375-8.34375 8.34375-3.070312 0-6.0625-1.089844-8.417969-3.046875l-17.855469-14.882813c-3.933593-8.039062-12.015624-13.644531-21.480468-13.980468-.460938-13.050782-10.949219-23.539063-24-24-.460938-13.050782-10.949219-23.539063-24-24-.46875-13.355469-11.40625-24.089844-24.871094-24.089844-6.574219 0-13.007812 2.664062-17.65625 7.3125l-14.0625 14.0625c-.839844.839844-1.535156 1.792969-2.242188 2.738281l-24.574218-14.746093 21.542968-75.398438 54.007813-12.007812c14.167969-3.167969 29.105469-2.480469 42.921875 1.941406l11.785156 3.769531-39.953125 19.976563c-9.128906 4.574218-14.800781 13.757812-14.800781 23.96875v1.582031c0 14.777343 12.023438 26.800781 26.800781 26.800781 4.855469 0 9.632813-1.320312 13.785157-3.824219l29.789062-17.863281c5.984375-3.585938 14.015625-2.800781 19.183594 1.847656l67.59375 60.832032c1.808594 1.640624 2.847656 3.96875 2.847656 6.40625 0 4.746093-3.855469 8.601562-8.601562 8.601562zm152.601562-92.945312-134.777344 67.394531c-.4375-.464844-.894531-.90625-1.375-1.335938l-67.582031-60.832031c-5.921875-5.34375-13.578125-8.28125-21.554687-8.28125-5.832032 0-11.558594 1.585938-16.574219 4.59375l-29.800781 17.871094c-1.671876 1.007812-3.582032 1.535156-5.535157 1.535156-5.960937 0-10.800781-4.839844-10.800781-10.800781v-1.582031c0-4.121094 2.289062-7.816407 5.96875-9.65625l44.625-22.3125c7.636719-3.824219 16.703125-4.679688 24.933594-2.3125l50.273437 14.359374 12.175781.304688 150.023438-78.960938zm0 0"
+                        data-original="#000000" class="hovered-path active-path" data-old_color="#000000"
+                        fill="#F60334"></path>
+
+
+
+                </g>
+
+
+
+            </svg>
+
+        </defs>
+
+    </svg>
+
+
+
+
+
+    <script src="jquery-3.5.1.min.js"></script>
+
+    <script src="bootstrap.bundle.min.js"></script>
+
+    <script src="tilt.jquery.min.js" defer=""></script>
+
+    <script src="ling-gallery-filter.js" defer=""></script>
+
+    <script src="typewriter.js" defer=""></script>
+
+
+
+    <script src="aos2_3_4.js" defer=""></script>
+
+    <script src="swiper_min.js" defer=""></script>
+
+    <script src="simpleParallax_min.js" defer=""></script>
+
+    <script src="skrollr.min.js" defer=""></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.0/anime.min.js"
+        integrity="sha512-LfB+BcvR3zBt7ebVskhSWiSbEUiG3p5EcCprkieldsKhBeR6wpnLi0VpWC2GNgVGWP2n/skO8Bx2oKNjUhXCkw=="
+        crossorigin="anonymous" defer=""></script>
+
+    <script src="main.js" defer=""></script>
+    <script src="https://widget.clutch.co/static/js/widget.js"></script>
+
+
+
+
+
+    <!--Start of Tawk.to Script-->
+    <script type="text/javascript">
+        var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
+        (function () {
+            var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
+            s1.async = true;
+            s1.src = 'https://embed.tawk.to/60d1a2f265b7290ac6373ab9/1f8pe92e1';
+            s1.charset = 'UTF-8';
+            s1.setAttribute('crossorigin', '*');
+            s0.parentNode.insertBefore(s1, s0);
+        })();
+    </script>
+    <!--End of Tawk.to Script-->
+
+
+
+
+
+
+    <script>
+
+        function myFunction() {
+
+            var d = new Date();
+
+            var n = d.getFullYear();
+
+            $('#year').val(n);
+
+
+
+            var hourNow = d.getHours();
+
+            var indian = new Date().toLocaleString("en-US", {
+
+                timeZone: "Asia/Kolkata"
+
+            });
+
+            var q = new Date(indian);
+
+            var indianHour = q.getHours();
+
+            var indianTime;
+
+            var greeting;
+
+
+
+            if (hourNow >= 0 && hourNow < 6) {
+
+                greeting = 'Very Early Morning';
+
+            } else if (hourNow >= 6 && hourNow < 12) {
+
+                greeting = 'Good Morning';
+
+            } else if (hourNow >= 12 && hourNow < 18) {
+
+                greeting = 'Good Afternoon!';
+
+            } else {
+
+                greeting = 'Good Evening!';
+
+            }
+
+            $('#greeting').val(greeting);
+
+
+
+            if (indianHour >= 0 && indianHour < 6) {
+
+                indianTime = 'Very Early Morning';
+
+            } else if (indianHour >= 6 && indianHour < 12) {
+
+                indianTime = 'Good Morning';
+
+            } else if (indianHour >= 12 && indianHour < 18) {
+
+                indianTime = 'Good Afternoon!';
+
+            } else {
+
+                indianTime = 'Good Evening!';
+
+            }
+
+            $('#indianTime').val(indianTime);
+
+
+
+        }
+
+
+
+
+
+        $('button[type=submit]').attr('disabled', 'disabled');
+
+        $('button[type=submit]').removeAttr('disabled');
+
+        $('#message').show();
+
+        $('#success').hide();
+
+        $('#fail').hide();
+
+
+
+        var randomNum1;
+
+        var randomNum2;
+
+
+
+        //set the largeest number to display
+
+
+
+        var maxNum = 15;
+
+        var total;
+
+
+
+        randomNum1 = Math.ceil(Math.random() * maxNum);
+
+        randomNum2 = Math.ceil(Math.random() * maxNum);
+
+        total = randomNum1 + randomNum2;
+
+
+
+        $("#question").prepend(randomNum1 + " + " + randomNum2);
+
+
+
+        // When users input the value
+
+
+
+        $("#ans").keyup(function () {
+
+
+
+            var input = $(this).val();
+
+            var slideSpeed = 200;
+
+
+
+            $('#message').hide();
+
+
+
+            if (input == total) {
+
+                $('button[type=submit]').removeAttr('disabled');
+
+                $('#success').show();
+
+                $('#fail').hide();
+
+
+
+            } else {
+
+                $('button[type=submit]').attr('disabled', 'disabled');
+
+                $('#fail').show();
+
+                $('#success').hide();
+
+
+
+            }
+
+
+
+        });
+
+
+
+        // Wheen "reset button" click, generating new randomNum1 & randomNum2
+
+        $("#reset").on("click", function () {
+
+            $('#message').show();
+
+            $('#success').hide();
+
+            $('#fail').hide();
+
+            randomNum1 = Math.ceil(Math.random() * maxNum);
+
+            randomNum2 = Math.ceil(Math.random() * maxNum);
+
+            total = randomNum1 + randomNum2;
+
+            $("#question").empty();
+
+            $("#ans").val('');
+
+            $("#question").prepend(randomNum1 + " + " + randomNum2);
+
+        });
+
+
+
+        setTimeout(function () {
+
+            $('#emailmsg').fadeOut('fast');
+
+        }, 8000);
+
+
+
+        (function () {
+
+            'use strict';
+
+            window.addEventListener('load', function () {
+
+                // Fetch all the forms we want to apply custom Bootstrap validation styles to
+
+                var forms = document.getElementsByClassName('needs-validation');
+
+                // Loop over them and prevent submission
+
+                var validation = Array.prototype.filter.call(forms, function (form) {
+
+                    form.addEventListener('submit', function (event) {
+
+                        if (form.checkValidity() === false) {
+
+                            event.preventDefault();
+
+                            event.stopPropagation();
+
+                        }
+
+                        form.classList.add('was-validated');
+
+                    }, false);
+
+                });
+
+            }, false);
+
+        })();
+
+
+
+    </script>
+
+
+    <!-- Google Tag Manager -->
+
+    <!-- End Google Tag Manager -->
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+
+
+
+
+
+
+
+
+    <script>'undefined' === typeof _trfq || (window._trfq = []); 'undefined' === typeof _trfd && (window._trfd = []), _trfd.push({ 'tccl.baseHost': 'secureserver.net' }), _trfd.push({ 'ap': 'cpsh' }, { 'server': 'a2plcpnl0311' }, { 'id': '6933144' }) // Monitoring performance to make your website faster. If you want to opt-out, please contact web hosting support.</script>
+    <script src="https://img1.wsimg.com/tcc/tcc_l.combined.1.0.6.min.js"></script><a class="back-to-top"></a>
+    <div id="h10-xray"></div>
+    <div id="h10-asin-grabber"></div>
+    <div id="h10-demand"></div>
+    <div id="h10-inventory"></div>
+    <div id="h10-profitability-calculator"></div>
+    <div id="h10-review"></div>
+    <script async="" charset="UTF-8" src="https://embed.tawk.to/_s/v4/app/60e6a1005d8/languages/en.js"></script>
+    <div id="ig65se60ptj1fa86333p" style="display: block !important;"><iframe src="about:blank" frameborder="0"
+            scrolling="no" width="64px" height="60px"
+            style="outline:none !important; visibility:visible !important; resize:none !important; box-shadow:none !important; overflow:visible !important; background:none !important; opacity:1 !important; filter:alpha(opacity=100) !important; -ms-filter:progid:DXImageTransform.Microsoft.Alpha(Opacity 1}) !important; -mz-opacity:1 !important; -khtml-opacity:1 !important; top:auto !important; right:16px !important; bottom:20px !important; left:auto !important; position:fixed !important; border:0 !important; min-height:60px !important; min-width:64px !important; max-height:60px !important; max-width:64px !important; padding:0 !important; margin:0 !important; -moz-transition-property:none !important; -webkit-transition-property:none !important; -o-transition-property:none !important; transition-property:none !important; transform:none !important; -webkit-transform:none !important; -ms-transform:none !important; width:64px !important; height:60px !important; display:block !important; z-index:1000001 !important; background-color:transparent !important; cursor:none !important; float:none !important; border-radius:unset !important; pointer-events:auto !important; clip:auto !important;"
+            id="rqh9e1325p2o1fa86335e" class="" title="chat widget"></iframe><iframe src="about:blank" frameborder="0"
+            scrolling="no" width="350px" height="520px"
+            style="outline:none !important; visibility:visible !important; resize:none !important; box-shadow:none !important; overflow:visible !important; background:none !important; opacity:1 !important; filter:alpha(opacity=100) !important; -ms-filter:progid:DXImageTransform.Microsoft.Alpha(Opacity 1}) !important; -mz-opacity:1 !important; -khtml-opacity:1 !important; top:auto !important; right:10px !important; bottom:90px !important; left:auto !important; position:fixed !important; border:0 !important; min-height:520px !important; min-width:350px !important; max-height:520px !important; max-width:350px !important; padding:0 !important; margin:0 !important; -moz-transition-property:none !important; -webkit-transition-property:none !important; -o-transition-property:none !important; transition-property:none !important; transform:none !important; -webkit-transform:none !important; -ms-transform:none !important; width:350px !important; height:520px !important; display:none !important; z-index:auto !important; background-color:transparent !important; cursor:none !important; float:none !important; border-radius:5px !important; pointer-events:auto !important; clip:auto !important;"
+            id="y7sj861gkou81fa863352" class="" title="chat widget"></iframe><iframe src="about:blank" frameborder="0"
+            scrolling="no" width="360px" height="548px"
+            style="outline:none !important; visibility:visible !important; resize:none !important; box-shadow:none !important; overflow:visible !important; background:none !important; opacity:1 !important; filter:alpha(opacity=100) !important; -ms-filter:progid:DXImageTransform.Microsoft.Alpha(Opacity 1}) !important; -mz-opacity:1 !important; -khtml-opacity:1 !important; top:auto !important; right:20px !important; bottom:100px; left:auto !important; position:fixed !important; border:0 !important; min-height:548px !important; min-width:360px !important; max-height:548px !important; max-width:360px !important; padding:0 !important; margin:0 !important; -moz-transition-property:none !important; -webkit-transition-property:none !important; -o-transition-property:none !important; transition-property:none !important; transform:none !important; -webkit-transform:none !important; -ms-transform:none !important; width:360px !important; height:548px !important; display:none !important; z-index:auto !important; background-color:transparent !important; cursor:none !important; float:none !important; border-radius:unset !important; pointer-events:auto !important; clip:auto !important;"
+            id="n9nrjt7s3ego1fa86334g" class="" title="chat widget"></iframe><iframe src="about:blank" frameborder="0"
+            scrolling="no" width="124px" height="95px"
+            style="outline:none !important; visibility:visible !important; resize:none !important; box-shadow:none !important; overflow:visible !important; background:none !important; opacity:1 !important; filter:alpha(opacity=100) !important; -ms-filter:progid:DXImageTransform.Microsoft.Alpha(Opacity 1}) !important; -mz-opacity:1 !important; -khtml-opacity:1 !important; top:auto !important; right:0px !important; bottom:30px !important; left:auto !important; position:fixed !important; border:0 !important; min-height:95px !important; min-width:124px !important; max-height:95px !important; max-width:124px !important; padding:0 !important; margin:0px 0 0 0 !important; -moz-transition-property:none !important; -webkit-transition-property:none !important; -o-transition-property:none !important; transition-property:none !important; transform:rotate(0deg) translateZ(0); -webkit-transform:rotate(0deg) translateZ(0); -ms-transform:rotate(0deg) translateZ(0); width:124px !important; height:95px !important; display:none !important; z-index:1000002 !important; background-color:transparent !important; cursor:none !important; float:none !important; border-radius:unset !important; pointer-events:auto !important; clip:auto !important; -moz-transform:rotate(0deg) translateZ(0); -o-transform:rotate(0deg) translateZ(0); transform-origin:0; -moz-transform-origin:0; -webkit-transform-origin:0; -o-transform-origin:0; -ms-transform-origin:0;"
+            id="umbacmg0vnf81fa86335r" class="" title="chat widget"></iframe></div>
+</body>
+
+</html>
